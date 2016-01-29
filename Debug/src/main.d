@@ -1,5 +1,6 @@
-src/main.d src/main.o src/main.o: ../src/main.c ../src/asf.h \
- ../src/asf/avr32/utils/compiler.h \
+src/main.d src/main.o src/main.o: ../src/main.c \
+ c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/../../../../avr32/include/stdint.h \
+ ../src/asf.h ../src/asf/avr32/utils/compiler.h \
  ../src/asf/avr32/utils/preprocessor/preprocessor.h \
  ../src/asf/avr32/utils/preprocessor/tpaste.h \
  ../src/asf/avr32/utils/preprocessor/stringz.h \
@@ -50,7 +51,6 @@ src/main.d src/main.o src/main.o: ../src/main.c ../src/asf.h \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/../../../../avr32/include/machine/stdlib.h \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/../../../../avr32/include/alloca.h \
  c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/include/stdbool.h \
- c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/../../../../avr32/include/stdint.h \
  ../src/asf/common/utils/interrupt.h ../src/asf/avr32/utils/parts.h \
  ../src/asf/common/utils/interrupt/interrupt_avr32.h \
  ../src/asf/avr32/utils/preprocessor/tpaste.h \
@@ -84,6 +84,8 @@ src/main.d src/main.o src/main.o: ../src/main.c ../src/asf.h \
  ../src/asf/avr32/drivers/spifun/spifun.h \
  ../src/asf/avr32/drivers/usart/usart.h \
  ../src/asf/avr32/drivers/gpio/gpio.h
+
+c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/../../../../avr32/include/stdint.h:
 
 ../src/asf.h:
 
@@ -188,8 +190,6 @@ c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.
 c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/../../../../avr32/include/alloca.h:
 
 c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/include/stdbool.h:
-
-c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.65\avrtoolchain\bin\../lib/gcc/avr32/4.4.3/../../../../avr32/include/stdint.h:
 
 ../src/asf/common/utils/interrupt.h:
 

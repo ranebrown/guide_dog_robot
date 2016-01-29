@@ -1,37 +1,22 @@
-/**
- * \file
- *
- * \brief Empty user application template
- *
- */
-
 /*
- * Include header files for all drivers that have been imported from
- * Atmel Software Framework (ASF).
- */
-#include <asf.h>
+*	main.c
+*/
+
+// standard includes
 #include <stdint.h>
 
-#ifdef FREERTOS_USED
-
-#include "FreeRTOS.h"
-#include "semphr.h"
-
-#endif
-
-#include "asf/avr32/drivers/gpio/gpio.h"
-#include "asf/avr32/drivers/usart/usart.h"
-#include "asf/avr32/drivers/spi/spi.h"
+// project specific includes
+#include <asf.h> // includes everything added with ASF wizard
+#include "gpio.h"
+#include "usart.h"
+#include "spi.h"
 #include "twim.h"
-#include "asf/avr32/drivers/spifun/spifun.h"
-#include "asf/avr32/drivers/i2cfun/i2cfun.h"
-#include "asf/avr32/drivers/FPGA/fpga.h"
+#include "spifun.h"
+#include "i2cfun.h"
+#include "fpga.h"
 
 #define WRITE_MR(val) ((*(volatile uint32_t *)0xFFFF4004) = (val))
 #define WRITE_TDR(val) ((*(volatile uint32_t *)0xFFFF400C) = (val))
-
-void initClock();
-void gpioClock();
 
 uint32_t *USART3_BASE_ADDR = (uint32_t*)0xFFFF3C00;
 uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
