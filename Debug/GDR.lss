@@ -7,39 +7,39 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   1 .rela.got     00000000  80002004  80002004  00002404  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  2 .text         00000e34  80002004  80002004  00002404  2**2
+  2 .text         00000e28  80002004  80002004  00002404  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   3 .exception    00000200  80003000  80003000  00003400  2**9
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
   4 .rodata       000001d8  80003200  80003200  00003600  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .data         0000000c  00000004  800033d8  00003804  2**2
+  5 .data         00000004  00000004  800033d8  00003804  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .bss          000000e8  00000010  800033e4  00003810  2**2
+  6 .bss          000000e8  00000008  800033dc  00003808  2**2
                   ALLOC
-  7 .comment      00000030  00000000  00000000  00003810  2**0
+  7 .comment      00000030  00000000  00000000  00003808  2**0
                   CONTENTS, READONLY
-  8 .debug_aranges 00000718  00000000  00000000  00003840  2**0
+  8 .debug_aranges 00000718  00000000  00000000  00003838  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_pubnames 000015db  00000000  00000000  00003f58  2**0
+  9 .debug_pubnames 0000151b  00000000  00000000  00003f50  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_info   0000dd60  00000000  00000000  00005533  2**0
+ 10 .debug_info   0000dc9d  00000000  00000000  0000546b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_abbrev 000017cb  00000000  00000000  00013293  2**0
+ 11 .debug_abbrev 0000178f  00000000  00000000  00013108  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_line   00005fe4  00000000  00000000  00014a5e  2**0
+ 12 .debug_line   00005fdf  00000000  00000000  00014897  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_frame  000012c4  00000000  00000000  0001aa44  2**2
+ 13 .debug_frame  000012c0  00000000  00000000  0001a878  2**2
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    00003de5  00000000  00000000  0001bd08  2**0
+ 14 .debug_str    00003dbe  00000000  00000000  0001bb38  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_loc    00002f74  00000000  00000000  0001faed  2**0
+ 15 .debug_loc    00002f87  00000000  00000000  0001f8f6  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_macinfo 0079aeef  00000000  00000000  00022a61  2**0
+ 16 .debug_macinfo 0079b228  00000000  00000000  0002287d  2**0
                   CONTENTS, READONLY, DEBUGGING
  17 .stack        00001000  00007000  00007000  00000400  2**0
                   ALLOC
- 18 .debug_ranges 000006f0  00000000  00000000  007bd950  2**0
+ 18 .debug_ranges 000006f0  00000000  00000000  007bdaa5  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .reset:
@@ -156,7 +156,7 @@ static unsigned int flashcdw_get_error_status(void)
 80002070:	00 00       	add	r0,r0
 80002072:	00 04       	add	r4,r0
 80002074:	00 00       	add	r0,r0
-80002076:	00 10       	sub	r0,r0
+80002076:	00 08       	add	r8,r0
 
 80002078 <flashcdw_set_flash_waitstate_and_readmode>:
 	AVR32_FLASHCDW.fcr = u_avr32_flashcdw_fcr.fcr;
@@ -2166,27 +2166,25 @@ int usart_init_rs232(volatile avr32_usart_t *usart, const usart_options_t *opt, 
 80002ad0:	00 00       	add	r0,r0
 80002ad2:	00 04       	add	r4,r0
 80002ad4:	00 00       	add	r0,r0
-80002ad6:	00 10       	sub	r0,r0
+80002ad6:	00 08       	add	r8,r0
 80002ad8:	80 00       	ld.sh	r0,r0[0x0]
 80002ada:	33 d8       	mov	r8,61
 80002adc:	00 00       	add	r0,r0
-80002ade:	00 10       	sub	r0,r0
+80002ade:	00 08       	add	r8,r0
 80002ae0:	00 00       	add	r0,r0
-80002ae2:	00 f8       	st.b	--r0,r8
+80002ae2:	00 f0       	st.b	--r0,r0
 
 80002ae4 <gpioClock>:
-	pm_set_mclk_source(PM_CLK_SRC_DFLL0);
-	
-}
-
-#define AVR32_GC_DIV_CLOCK                             0x00000001
+/*
+* description: outputs clock signal to gpio pin 6
+* args: none
+* return: none
+*/
 void gpioClock() {
 80002ae4:	d4 01       	pushm	lr
-	// Note: for UC3L devices, the generic clock configurations are handled by the
-	// SCIF module.
+	// Note: for UC3L devices, the generic clock configurations are handled by the SCIF module.
 	// Setup gc to use the DFLL0 as source clock, divisor enabled, apply a division factor.
-	// Since the DFLL0 frequency is 96MHz, set the division factor to 2 to have a
-	// gclk frequency of 48MHz.
+	// Since the DFLL0 frequency is 96MHz, set the division factor to 2 to have a gclk frequency of 48MHz.
 	scif_gc_setup(AVR32_SCIF_GCLK_DFLL0_SSG, SCIF_GCCTRL_DFLL0, AVR32_GC_DIV_CLOCK, 2);
 80002ae6:	30 29       	mov	r9,2
 80002ae8:	30 1a       	mov	r10,1
@@ -2214,11 +2212,11 @@ void gpioClock() {
 80002b0e:	22 0c       	sub	r12,32
 
 80002b10 <initClock>:
-	gpio_configure_pin(AVR32_PIN_PA22, init_b_config);
-	gpio_configure_pin(AVR32_PIN_PB10, done_config);
-	 
-}
-
+/*
+* description: initializes gpio pins
+* args: none
+* return: none
+*/
 void initClock() {
 80002b10:	d4 01       	pushm	lr
 80002b12:	20 2d       	sub	sp,8
@@ -2277,18 +2275,14 @@ void initClock() {
 80002b62:	25 f6       	sub	r6,95
 
 80002b64 <board_init>:
-#define WRITE_CR(val) ((*(volatile uint32_t *)0xFFFF4000) = (val))
-#define WRITE_CS0(val) ((*(volatile uint32_t *)0xFFFF4030) = (val))
-#define WRITE_CS3(val) ((*(volatile uint32_t *)0xFFFF403C) = (val))
-
-void board_init(void)
+* description: initializes PCB and peripherals such as uart, i2c, spi
+* args: none
+* return: none
+*/
+void board_init()
 {
 80002b64:	eb cd 40 80 	pushm	r7,lr
-	//uint32_t *GCLK0_CONTROL_BASE = (uint32_t*)0xFFFF1870;
-	//*GCLK0_CONTROL_BASE = 0x00000001;
-	//gpio_enable_module_pin(AVR32_SCIF_GCLK_0_1_PIN, AVR32_SCIF_GCLK_0_1_FUNCTION);
-
-//init GPIO
+	// init GPIO
 	gpio_enable_gpio_pin(AVR32_PIN_PA15);
 80002b68:	30 fc       	mov	r12,15
 80002b6a:	f0 1f 00 3f 	mcall	80002c64 <board_init+0x100>
@@ -2296,7 +2290,7 @@ void board_init(void)
 80002b6e:	31 0c       	mov	r12,16
 80002b70:	f0 1f 00 3d 	mcall	80002c64 <board_init+0x100>
 
-//Initial SPI pins
+	// Initial SPI pins
 	gpio_enable_module_pin(AVR32_SPI_SCK_0_1_PIN, AVR32_SPI_SCK_0_1_FUNCTION);				//Enable SCK
 80002b74:	30 2b       	mov	r11,2
 80002b76:	32 1c       	mov	r12,33
@@ -2321,11 +2315,9 @@ void board_init(void)
 80002b9c:	30 1b       	mov	r11,1
 80002b9e:	30 9c       	mov	r12,9
 80002ba0:	f0 1f 00 32 	mcall	80002c68 <board_init+0x104>
+	
+	// set values for spi registers
 	uint32_t *SPI_BASE = (volatile uint32_t*)0xFFFF4000;
-	//*(SPI_BASE+0x04) = 0x00000053;				//init mode register
-	//*(SPI_BASE+0x30) = 0x00000202;				//init cs0 register
-	//*(SPI_BASE+0x00) = 0x00000001;
-	//WRITE_MR(0x00000013);
 	WRITE_MR(0x000E0011);
 80002ba4:	ee 69 00 11 	mov	r9,917521
 80002ba8:	fe 78 40 04 	mov	r8,-49148
@@ -2341,11 +2333,9 @@ void board_init(void)
 80002bbe:	30 17       	mov	r7,1
 80002bc0:	fe 78 40 00 	mov	r8,-49152
 80002bc4:	91 07       	st.w	r8[0x0],r7
-	
 
-//Initialize UART pins
-
-	//UART 2 is General Purpose
+	// Initialize UART pins
+	//UART 2 is motor driver
 	gpio_enable_module_pin(AVR32_USART2_TXD_0_0_PIN, AVR32_USART2_TXD_0_0_FUNCTION);			//UART 2 TX
 80002bc6:	30 0b       	mov	r11,0
 80002bc8:	31 4c       	mov	r12,20
@@ -2356,7 +2346,6 @@ void board_init(void)
 80002bd2:	f0 1f 00 26 	mcall	80002c68 <board_init+0x104>
 	uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
 	
-	
 	//UART 3 is used to communicate with PC
 	gpio_enable_module_pin(AVR32_USART3_TXD_0_1_PIN, AVR32_USART3_TXD_0_1_FUNCTION);			//UART 3 TX
 80002bd6:	0e 9b       	mov	r11,r7
@@ -2366,11 +2355,9 @@ void board_init(void)
 80002bde:	0e 9b       	mov	r11,r7
 80002be0:	32 7c       	mov	r12,39
 80002be2:	f0 1f 00 22 	mcall	80002c68 <board_init+0x104>
-		.paritytype = USART_NO_PARITY,
-		.stopbits = USART_1_STOPBIT,
-		.channelmode = USART_NORMAL_CHMODE
-	};
+	uint32_t *USART3_BASE_ADDR = (uint32_t*)0xFFFF3C00;
 	
+	// set uart baud rate and options
 	usart_init_rs232(USART3_BASE_ADDR, &USART_OPTIONS, 17200000);
 80002be6:	e0 6a 73 80 	mov	r10,29568
 80002bea:	ea 1a 01 06 	orh	r10,0x106
@@ -2383,35 +2370,31 @@ void board_init(void)
 80002c00:	49 db       	lddpc	r11,80002c74 <board_init+0x110>
 80002c02:	fe 7c 38 00 	mov	r12,-51200
 80002c06:	f0 1f 00 1b 	mcall	80002c70 <board_init+0x10c>
-		.chip = 0x55,
-		.smbus = false
-	};
-*/
 	
-	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);			//enable i2c clk
+	// initialize i2c pins
+	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);							//enable i2c clk
 80002c0a:	30 6b       	mov	r11,6
 80002c0c:	32 4c       	mov	r12,36
 80002c0e:	f0 1f 00 17 	mcall	80002c68 <board_init+0x104>
-	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);  //enable i2c data
+	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);	//enable i2c data
 80002c12:	30 3b       	mov	r11,3
 80002c14:	31 1c       	mov	r12,17
 80002c16:	f0 1f 00 15 	mcall	80002c68 <board_init+0x104>
-	//twim_master_init(TWIM1_BASE, &TWIM_OPTIONS); //have to initialize in main because the right clock frequency isnt set yet
 	
-//Initialize FGPA config pins
-	gpio_enable_gpio_pin(AVR32_PIN_PB05);					//init CCLK
+	//Initialize FGPA config pins
+	gpio_enable_gpio_pin(AVR32_PIN_PB05);					// init CCLK
 80002c1a:	32 5c       	mov	r12,37
 80002c1c:	f0 1f 00 12 	mcall	80002c64 <board_init+0x100>
-	gpio_enable_gpio_pin(AVR32_PIN_PA05);					//init DIN
+	gpio_enable_gpio_pin(AVR32_PIN_PA05);					// init DIN
 80002c20:	30 5c       	mov	r12,5
 80002c22:	f0 1f 00 11 	mcall	80002c64 <board_init+0x100>
-	gpio_enable_gpio_pin(AVR32_PIN_PA11);					//init PROGRAM_B
+	gpio_enable_gpio_pin(AVR32_PIN_PA11);					// init PROGRAM_B
 80002c26:	30 bc       	mov	r12,11
 80002c28:	f0 1f 00 0f 	mcall	80002c64 <board_init+0x100>
-	gpio_enable_gpio_pin(AVR32_PIN_PA22);					//init INIT_B
+	gpio_enable_gpio_pin(AVR32_PIN_PA22);					// init INIT_B
 80002c2c:	31 6c       	mov	r12,22
 80002c2e:	f0 1f 00 0e 	mcall	80002c64 <board_init+0x100>
-	gpio_enable_gpio_pin(AVR32_PIN_PB10);					//init DONE
+	gpio_enable_gpio_pin(AVR32_PIN_PB10);					// init DONE
 80002c32:	32 ac       	mov	r12,42
 80002c34:	f0 1f 00 0c 	mcall	80002c64 <board_init+0x100>
 	uint32_t program_b_config = GPIO_DIR_OUTPUT | GPIO_INIT_HIGH;
@@ -2456,164 +2439,163 @@ void board_init(void)
 80002c7a:	22 ce       	sub	lr,44
 
 80002c7c <main>:
-		.chip = TARGET_ADDRESS,
-		.smbus = true
-};	
+#include "spifun.h"
+#include "i2cfun.h"
+#include "fpga.h"
 
 int main (void)
 {
-80002c7c:	eb cd 40 f8 	pushm	r3-r7,lr
-	board_init();
-80002c80:	f0 1f 00 57 	mcall	80002ddc <main+0x160>
-	initClock();						// set clock to 48MHz
-80002c84:	f0 1f 00 57 	mcall	80002de0 <main+0x164>
-	gpioClock();						// output clock to gpio pin 6
-80002c88:	f0 1f 00 57 	mcall	80002de4 <main+0x168>
+80002c7c:	d4 21       	pushm	r4-r7,lr
+	int adc_ce_reg_pointer = &adc_ce_reg;
+	int i2c_dummy = 0x55;
+	int *i2c_dummy_p = &i2c_dummy;
+	
+	// initialization
+	initClock();			// set clock to 48MHz
+80002c7e:	f0 1f 00 58 	mcall	80002ddc <main+0x160>
+	board_init();			// mainly for communication profiles
+80002c82:	f0 1f 00 58 	mcall	80002de0 <main+0x164>
+	gpioClock();			// output clock to gpio pin 6
+80002c86:	f0 1f 00 58 	mcall	80002de4 <main+0x168>
+80002c8a:	30 69       	mov	r9,6
+80002c8c:	fe 78 40 00 	mov	r8,-49152
+80002c90:	91 39       	st.w	r8[0xc],r9
 		
 	//enable write for flash chip
 	spi_put(SPI_BASE_MAIN, 0x06);
-80002c8c:	4d 78       	lddpc	r8,80002de8 <main+0x16c>
-80002c8e:	70 08       	ld.w	r8,r8[0x0]
-80002c90:	30 69       	mov	r9,6
-80002c92:	91 39       	st.w	r8[0xc],r9
 	clr_rx = *((volatile uint16_t*)(0xFFFF4008));
-80002c94:	fe 78 40 08 	mov	r8,-49144
-80002c98:	90 09       	ld.sh	r9,r8[0x0]
-80002c9a:	5c 79       	castu.h	r9
-80002c9c:	4d 48       	lddpc	r8,80002dec <main+0x170>
-80002c9e:	91 09       	st.w	r8[0x0],r9
+80002c92:	fe 78 40 08 	mov	r8,-49144
+80002c96:	90 08       	ld.sh	r8,r8[0x0]
 	while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_RDRF_MASK) != AVR32_SPI_SR_RDRF_MASK );
-80002ca0:	fe 78 40 10 	mov	r8,-49136
-80002ca4:	70 09       	ld.w	r9,r8[0x0]
-80002ca6:	f3 d9 c0 01 	bfextu	r9,r9,0x0,0x1
-80002caa:	cf d0       	breq	80002ca4 <main+0x28>
+80002c98:	fe 78 40 10 	mov	r8,-49136
+80002c9c:	70 09       	ld.w	r9,r8[0x0]
+80002c9e:	f3 d9 c0 01 	bfextu	r9,r9,0x0,0x1
+80002ca2:	cf d0       	breq	80002c9c <main+0x20>
 	spi_unlock_flash();
-80002cac:	f0 1f 00 51 	mcall	80002df0 <main+0x174>
+80002ca4:	f0 1f 00 51 	mcall	80002de8 <main+0x16c>
 	while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_RDRF_MASK) != AVR32_SPI_SR_RDRF_MASK );
-80002cb0:	fe 78 40 10 	mov	r8,-49136
-80002cb4:	70 09       	ld.w	r9,r8[0x0]
-80002cb6:	f3 d9 c0 01 	bfextu	r9,r9,0x0,0x1
-80002cba:	cf d0       	breq	80002cb4 <main+0x38>
+80002ca8:	fe 78 40 10 	mov	r8,-49136
+80002cac:	70 09       	ld.w	r9,r8[0x0]
+80002cae:	f3 d9 c0 01 	bfextu	r9,r9,0x0,0x1
+80002cb2:	cf d0       	breq	80002cac <main+0x30>
 	
 	//config FPGA
 	//unsigned int file_length = program_flash();
 	//echo_back_flash_data(file_length);
 	
 	usart_write_line(USART3_BASE_ADDR, "reading file length from flash...\r\n");
-80002cbc:	4c e7       	lddpc	r7,80002df4 <main+0x178>
-80002cbe:	4c fb       	lddpc	r11,80002df8 <main+0x17c>
-80002cc0:	6e 0c       	ld.w	r12,r7[0x0]
-80002cc2:	f0 1f 00 4f 	mcall	80002dfc <main+0x180>
+80002cb4:	4c eb       	lddpc	r11,80002dec <main+0x170>
+80002cb6:	fe 7c 3c 00 	mov	r12,-50176
+80002cba:	f0 1f 00 4e 	mcall	80002df0 <main+0x174>
 	uint32_t file_length00 = 0;
 	uint32_t file_length3,file_length2,file_length1,file_length0;
 	file_length3 = (uint32_t)spi_read_flash(0) & 0x000000FF;						//program_flash();
-80002cc6:	30 0c       	mov	r12,0
-80002cc8:	f0 1f 00 4e 	mcall	80002e00 <main+0x184>
-80002ccc:	eb dc c0 08 	bfextu	r5,r12,0x0,0x8
+80002cbe:	30 0c       	mov	r12,0
+80002cc0:	f0 1f 00 4d 	mcall	80002df4 <main+0x178>
+80002cc4:	ef dc c0 08 	bfextu	r7,r12,0x0,0x8
 	send_binary_to_terminal(file_length3);
-80002cd0:	0a 9c       	mov	r12,r5
-80002cd2:	f0 1f 00 4d 	mcall	80002e04 <main+0x188>
+80002cc8:	0e 9c       	mov	r12,r7
+80002cca:	f0 1f 00 4c 	mcall	80002df8 <main+0x17c>
 	file_length2 = (uint32_t)spi_read_flash(1) & 0x000000FF;
-80002cd6:	30 1c       	mov	r12,1
-80002cd8:	f0 1f 00 4a 	mcall	80002e00 <main+0x184>
-80002cdc:	ed dc c0 08 	bfextu	r6,r12,0x0,0x8
+80002cce:	30 1c       	mov	r12,1
+80002cd0:	f0 1f 00 49 	mcall	80002df4 <main+0x178>
+80002cd4:	ed dc c0 08 	bfextu	r6,r12,0x0,0x8
 	send_binary_to_terminal(file_length2);
-80002ce0:	0c 9c       	mov	r12,r6
-80002ce2:	f0 1f 00 49 	mcall	80002e04 <main+0x188>
+80002cd8:	0c 9c       	mov	r12,r6
+80002cda:	f0 1f 00 48 	mcall	80002df8 <main+0x17c>
 	file_length1 = (uint32_t)spi_read_flash(2) & 0x000000FF;
-80002ce6:	30 2c       	mov	r12,2
-80002ce8:	f0 1f 00 46 	mcall	80002e00 <main+0x184>
-80002cec:	e7 dc c0 08 	bfextu	r3,r12,0x0,0x8
+80002cde:	30 2c       	mov	r12,2
+80002ce0:	f0 1f 00 45 	mcall	80002df4 <main+0x178>
+80002ce4:	e9 dc c0 08 	bfextu	r4,r12,0x0,0x8
 	send_binary_to_terminal(file_length1);
-80002cf0:	06 9c       	mov	r12,r3
-80002cf2:	f0 1f 00 45 	mcall	80002e04 <main+0x188>
+80002ce8:	08 9c       	mov	r12,r4
+80002cea:	f0 1f 00 44 	mcall	80002df8 <main+0x17c>
 	file_length0 = (uint32_t)spi_read_flash(3) & 0x000000FF;
-80002cf6:	30 3c       	mov	r12,3
-80002cf8:	f0 1f 00 42 	mcall	80002e00 <main+0x184>
-80002cfc:	e9 dc c0 08 	bfextu	r4,r12,0x0,0x8
+80002cee:	30 3c       	mov	r12,3
+80002cf0:	f0 1f 00 41 	mcall	80002df4 <main+0x178>
+80002cf4:	eb dc c0 08 	bfextu	r5,r12,0x0,0x8
 	send_binary_to_terminal(file_length0);
-80002d00:	08 9c       	mov	r12,r4
-80002d02:	f0 1f 00 41 	mcall	80002e04 <main+0x188>
+80002cf8:	0a 9c       	mov	r12,r5
+80002cfa:	f0 1f 00 40 	mcall	80002df8 <main+0x17c>
 	file_length00 = file_length3<<24 | file_length2<<16 | file_length1<<8 | file_length0<<0 | 0;
 	usart_putchar(USART3_BASE_ADDR, 0x0D);
-80002d06:	30 db       	mov	r11,13
-80002d08:	6e 0c       	ld.w	r12,r7[0x0]
-80002d0a:	f0 1f 00 40 	mcall	80002e08 <main+0x18c>
+80002cfe:	30 db       	mov	r11,13
+80002d00:	fe 7c 3c 00 	mov	r12,-50176
+80002d04:	f0 1f 00 3e 	mcall	80002dfc <main+0x180>
 	usart_putchar(USART3_BASE_ADDR, 0x0A);
-80002d0e:	30 ab       	mov	r11,10
-80002d10:	6e 0c       	ld.w	r12,r7[0x0]
-80002d12:	f0 1f 00 3e 	mcall	80002e08 <main+0x18c>
+80002d08:	30 ab       	mov	r11,10
+80002d0a:	fe 7c 3c 00 	mov	r12,-50176
+80002d0e:	f0 1f 00 3c 	mcall	80002dfc <main+0x180>
 	
 	usart_write_line(USART3_BASE_ADDR, "Configuring FPGA...\r\n");
-80002d16:	4b eb       	lddpc	r11,80002e0c <main+0x190>
-80002d18:	6e 0c       	ld.w	r12,r7[0x0]
-80002d1a:	f0 1f 00 39 	mcall	80002dfc <main+0x180>
+80002d12:	4b cb       	lddpc	r11,80002e00 <main+0x184>
+80002d14:	fe 7c 3c 00 	mov	r12,-50176
+80002d18:	f0 1f 00 36 	mcall	80002df0 <main+0x174>
 	int is_not_configured = configure_fpga(file_length00);
-80002d1e:	ec 0c 15 10 	lsl	r12,r6,0x10
-80002d22:	f9 e5 11 8c 	or	r12,r12,r5<<0x18
-80002d26:	08 4c       	or	r12,r4
-80002d28:	f9 e3 10 8c 	or	r12,r12,r3<<0x8
-80002d2c:	f0 1f 00 39 	mcall	80002e10 <main+0x194>
+80002d1c:	ec 0c 15 10 	lsl	r12,r6,0x10
+80002d20:	f9 e7 11 8c 	or	r12,r12,r7<<0x18
+80002d24:	0a 4c       	or	r12,r5
+80002d26:	f9 e4 10 8c 	or	r12,r12,r4<<0x8
+80002d2a:	f0 1f 00 37 	mcall	80002e04 <main+0x188>
 	
 	if (is_not_configured == 1){
-80002d30:	58 1c       	cp.w	r12,1
-80002d32:	c0 61       	brne	80002d3e <main+0xc2>
+80002d2e:	58 1c       	cp.w	r12,1
+80002d30:	c0 71       	brne	80002d3e <main+0xc2>
 		usart_write_line(USART3_BASE_ADDR, "Configuration Failed\r\n");
-80002d34:	4b 8b       	lddpc	r11,80002e14 <main+0x198>
-80002d36:	6e 0c       	ld.w	r12,r7[0x0]
-80002d38:	f0 1f 00 31 	mcall	80002dfc <main+0x180>
+80002d32:	4b 6b       	lddpc	r11,80002e08 <main+0x18c>
+80002d34:	fe 7c 3c 00 	mov	r12,-50176
+80002d38:	f0 1f 00 2e 	mcall	80002df0 <main+0x174>
 80002d3c:	c0 68       	rjmp	80002d48 <main+0xcc>
 	} else {
 		usart_write_line(USART3_BASE_ADDR, "Configuration Complete!\r\n");
-80002d3e:	4b 7b       	lddpc	r11,80002e18 <main+0x19c>
-80002d40:	4a d8       	lddpc	r8,80002df4 <main+0x178>
-80002d42:	70 0c       	ld.w	r12,r8[0x0]
-80002d44:	f0 1f 00 2e 	mcall	80002dfc <main+0x180>
+80002d3e:	4b 4b       	lddpc	r11,80002e0c <main+0x190>
+80002d40:	fe 7c 3c 00 	mov	r12,-50176
+80002d44:	f0 1f 00 2b 	mcall	80002df0 <main+0x174>
 	}
 	gpio_enable_gpio_pin(AVR32_PIN_PA17);
 80002d48:	31 1c       	mov	r12,17
-80002d4a:	f0 1f 00 35 	mcall	80002e1c <main+0x1a0>
+80002d4a:	f0 1f 00 32 	mcall	80002e10 <main+0x194>
 	gpio_enable_pin_pull_up(AVR32_PIN_PA17);
 80002d4e:	31 1c       	mov	r12,17
-80002d50:	f0 1f 00 34 	mcall	80002e20 <main+0x1a4>
+80002d50:	f0 1f 00 31 	mcall	80002e14 <main+0x198>
 	gpio_enable_pin_pull_up(AVR32_PIN_PB04);
 80002d54:	32 4c       	mov	r12,36
-80002d56:	f0 1f 00 33 	mcall	80002e20 <main+0x1a4>
+80002d56:	f0 1f 00 30 	mcall	80002e14 <main+0x198>
 	//gpio_enable_module_pin(AVR32_TWIMS0_TWD_0_2_PIN, 6);
 	//gpio_enable_module_pin(AVR32_TWIMS0_TWCK_0_2_PIN, AVR32_TWIMS0_TWCK_0_2_FUNCTION);
 	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);			//enable i2c clk
 80002d5a:	30 6b       	mov	r11,6
 80002d5c:	32 4c       	mov	r12,36
-80002d5e:	f0 1f 00 32 	mcall	80002e24 <main+0x1a8>
+80002d5e:	f0 1f 00 2f 	mcall	80002e18 <main+0x19c>
 	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);
 80002d62:	30 3b       	mov	r11,3
 80002d64:	31 1c       	mov	r12,17
-80002d66:	f0 1f 00 30 	mcall	80002e24 <main+0x1a8>
+80002d66:	f0 1f 00 2d 	mcall	80002e18 <main+0x19c>
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>16);
 80002d6a:	fe 77 48 1c 	mov	r7,-47076
 80002d6e:	6e 0c       	ld.w	r12,r7[0x0]
 80002d70:	b1 8c       	lsr	r12,0x10
-80002d72:	f0 1f 00 25 	mcall	80002e04 <main+0x188>
+80002d72:	f0 1f 00 22 	mcall	80002df8 <main+0x17c>
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>8);
 80002d76:	6e 0c       	ld.w	r12,r7[0x0]
 80002d78:	a9 8c       	lsr	r12,0x8
-80002d7a:	f0 1f 00 23 	mcall	80002e04 <main+0x188>
+80002d7a:	f0 1f 00 20 	mcall	80002df8 <main+0x17c>
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
 80002d7e:	6e 0c       	ld.w	r12,r7[0x0]
-80002d80:	f0 1f 00 21 	mcall	80002e04 <main+0x188>
+80002d80:	f0 1f 00 1e 	mcall	80002df8 <main+0x17c>
 	i2c_init();
-80002d84:	f0 1f 00 29 	mcall	80002e28 <main+0x1ac>
+80002d84:	f0 1f 00 26 	mcall	80002e1c <main+0x1a0>
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>16);
 80002d88:	6e 0c       	ld.w	r12,r7[0x0]
 80002d8a:	b1 8c       	lsr	r12,0x10
-80002d8c:	f0 1f 00 1e 	mcall	80002e04 <main+0x188>
+80002d8c:	f0 1f 00 1b 	mcall	80002df8 <main+0x17c>
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>8);
 80002d90:	6e 0c       	ld.w	r12,r7[0x0]
 80002d92:	a9 8c       	lsr	r12,0x8
-80002d94:	f0 1f 00 1c 	mcall	80002e04 <main+0x188>
+80002d94:	f0 1f 00 19 	mcall	80002df8 <main+0x17c>
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
 80002d98:	6e 0c       	ld.w	r12,r7[0x0]
-80002d9a:	f0 1f 00 1b 	mcall	80002e04 <main+0x188>
+80002d9a:	f0 1f 00 18 	mcall	80002df8 <main+0x17c>
 	*((volatile uint32_t*)(0xFFFF481C)) = 0x400;
 80002d9e:	e0 68 04 00 	mov	r8,1024
 80002da2:	8f 08       	st.w	r7[0x0],r8
@@ -2627,82 +2609,75 @@ int main (void)
 	
 	while (1) {
 		int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
-80002dae:	49 26       	lddpc	r6,80002df4 <main+0x178>
+80002dae:	fe 76 3c 00 	mov	r6,-50176
 		usart_putchar(USART3_BASE_ADDR, uart_data);									//echo back data
 		//gpio_enable_gpio_pin(AVR32_PIN_PA17);
 		spi_write_FPGA(0, 0x80, (uart_data-48));									//write data to LED control reg
-80002db0:	e0 65 00 80 	mov	r5,128
-80002db4:	30 04       	mov	r4,0
+80002db2:	e0 65 00 80 	mov	r5,128
+80002db6:	30 04       	mov	r4,0
 	//set_adc_sample_rate(1,400);
 	//set_adc_sample_rate(2,400);
 	//set_adc_ce(3, 1,adc_ce_reg_pointer);
 	
 	while (1) {
 		int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
-80002db6:	6c 0c       	ld.w	r12,r6[0x0]
-80002db8:	f0 1f 00 1d 	mcall	80002e2c <main+0x1b0>
-80002dbc:	ef dc c0 08 	bfextu	r7,r12,0x0,0x8
+80002db8:	0c 9c       	mov	r12,r6
+80002dba:	f0 1f 00 1a 	mcall	80002e20 <main+0x1a4>
+80002dbe:	ef dc c0 08 	bfextu	r7,r12,0x0,0x8
 		usart_putchar(USART3_BASE_ADDR, uart_data);									//echo back data
-80002dc0:	0e 9b       	mov	r11,r7
-80002dc2:	6c 0c       	ld.w	r12,r6[0x0]
-80002dc4:	f0 1f 00 11 	mcall	80002e08 <main+0x18c>
+80002dc2:	0e 9b       	mov	r11,r7
+80002dc4:	0c 9c       	mov	r12,r6
+80002dc6:	f0 1f 00 0e 	mcall	80002dfc <main+0x180>
 		//gpio_enable_gpio_pin(AVR32_PIN_PA17);
 		spi_write_FPGA(0, 0x80, (uart_data-48));									//write data to LED control reg
-80002dc8:	ee ca 00 30 	sub	r10,r7,48
-80002dcc:	0a 9b       	mov	r11,r5
-80002dce:	08 9c       	mov	r12,r4
-80002dd0:	f0 1f 00 18 	mcall	80002e30 <main+0x1b4>
+80002dca:	ee ca 00 30 	sub	r10,r7,48
+80002dce:	0a 9b       	mov	r11,r5
+80002dd0:	08 9c       	mov	r12,r4
+80002dd2:	f0 1f 00 15 	mcall	80002e24 <main+0x1a8>
 		//usart_putchar(USART2_BASE_ADDR, 0x0D);
 		int lidar = getLidar();
-80002dd4:	f0 1f 00 18 	mcall	80002e34 <main+0x1b8>
-80002dd8:	ce fb       	rjmp	80002db6 <main+0x13a>
-80002dda:	00 00       	add	r0,r0
+80002dd6:	f0 1f 00 15 	mcall	80002e28 <main+0x1ac>
+80002dda:	ce fb       	rjmp	80002db8 <main+0x13c>
 80002ddc:	80 00       	ld.sh	r0,r0[0x0]
-80002dde:	2b 64       	sub	r4,-74
+80002dde:	2b 10       	sub	r0,-79
 80002de0:	80 00       	ld.sh	r0,r0[0x0]
-80002de2:	2b 10       	sub	r0,-79
+80002de2:	2b 64       	sub	r4,-74
 80002de4:	80 00       	ld.sh	r0,r0[0x0]
 80002de6:	2a e4       	sub	r4,-82
-80002de8:	00 00       	add	r0,r0
-80002dea:	00 08       	add	r8,r0
-80002dec:	00 00       	add	r0,r0
-80002dee:	00 f4       	st.b	--r0,r4
+80002de8:	80 00       	ld.sh	r0,r0[0x0]
+80002dea:	27 a4       	sub	r4,122
+80002dec:	80 00       	ld.sh	r0,r0[0x0]
+80002dee:	33 68       	mov	r8,54
 80002df0:	80 00       	ld.sh	r0,r0[0x0]
-80002df2:	27 a4       	sub	r4,122
-80002df4:	00 00       	add	r0,r0
-80002df6:	00 0c       	add	r12,r0
+80002df2:	29 7c       	sub	r12,-105
+80002df4:	80 00       	ld.sh	r0,r0[0x0]
+80002df6:	28 26       	sub	r6,-126
 80002df8:	80 00       	ld.sh	r0,r0[0x0]
-80002dfa:	33 68       	mov	r8,54
+80002dfa:	21 04       	sub	r4,16
 80002dfc:	80 00       	ld.sh	r0,r0[0x0]
-80002dfe:	29 7c       	sub	r12,-105
+80002dfe:	29 00       	sub	r0,-112
 80002e00:	80 00       	ld.sh	r0,r0[0x0]
-80002e02:	28 26       	sub	r6,-126
+80002e02:	33 8c       	mov	r12,56
 80002e04:	80 00       	ld.sh	r0,r0[0x0]
-80002e06:	21 04       	sub	r4,16
+80002e06:	21 48       	sub	r8,20
 80002e08:	80 00       	ld.sh	r0,r0[0x0]
-80002e0a:	29 00       	sub	r0,-112
+80002e0a:	33 a4       	mov	r4,58
 80002e0c:	80 00       	ld.sh	r0,r0[0x0]
-80002e0e:	33 8c       	mov	r12,56
+80002e0e:	33 bc       	mov	r12,59
 80002e10:	80 00       	ld.sh	r0,r0[0x0]
-80002e12:	21 48       	sub	r8,20
+80002e12:	22 a0       	sub	r0,42
 80002e14:	80 00       	ld.sh	r0,r0[0x0]
-80002e16:	33 a4       	mov	r4,58
+80002e16:	22 b8       	sub	r8,43
 80002e18:	80 00       	ld.sh	r0,r0[0x0]
-80002e1a:	33 bc       	mov	r12,59
+80002e1a:	22 0c       	sub	r12,32
 80002e1c:	80 00       	ld.sh	r0,r0[0x0]
-80002e1e:	22 a0       	sub	r0,42
+80002e1e:	24 34       	sub	r4,67
 80002e20:	80 00       	ld.sh	r0,r0[0x0]
-80002e22:	22 b8       	sub	r8,43
+80002e22:	29 50       	sub	r0,-107
 80002e24:	80 00       	ld.sh	r0,r0[0x0]
-80002e26:	22 0c       	sub	r12,32
+80002e26:	20 d0       	sub	r0,13
 80002e28:	80 00       	ld.sh	r0,r0[0x0]
-80002e2a:	24 34       	sub	r4,67
-80002e2c:	80 00       	ld.sh	r0,r0[0x0]
-80002e2e:	29 50       	sub	r0,-107
-80002e30:	80 00       	ld.sh	r0,r0[0x0]
-80002e32:	20 d0       	sub	r0,13
-80002e34:	80 00       	ld.sh	r0,r0[0x0]
-80002e36:	25 38       	sub	r8,83
+80002e2a:	25 38       	sub	r8,83
 
 Disassembly of section .exception:
 

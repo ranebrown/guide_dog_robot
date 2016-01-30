@@ -15,3 +15,7 @@ Spartan 6 fpga part #: XC6SLX9-2TQG144C
 
 
 ## Known Issues
+
+## TODO
+*code cleanup
+*function descriptions

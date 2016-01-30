@@ -15,37 +15,25 @@
 #include "i2cfun.h"
 #include "fpga.h"
 
-uint32_t *USART3_BASE_ADDR = (uint32_t*)0xFFFF3C00;
-uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
-uint32_t *SPI_BASE_MAIN = (uint32_t*)0xFFFF4000;
-uint32_t *TWIM1_BASE = (uint32_t *)0xFFFF4400;
-int flash_data = 0x65;
-int *flash_data_pointer = &flash_data;
-int clr_rx;
-int adc_ce_reg = 0x00;
-int adc_ce_reg_pointer = &adc_ce_reg;
-int i2c_dummy = 0x55;
-int *i2c_dummy_p = &i2c_dummy;
-
-#define TARGET_ADDRESS     0x08            //! Target's TWI address
-#define TARGET_ADDR_LGT    3               //! Internal Address length
-#define VIRTUALMEM_ADDR    0x123456        //! Internal Address
-#define TWIM_MASTER_SPEED  50000           //! Speed of TWI
-#define FCPU_HZ       17200000  // CPU Frequency
-#define FPBA_HZ       17200000  // PBA Frequency
-	// Set TWIM options
-static const twi_options_t TWIM_OPTIONS = {
-		.pba_hz = FPBA_HZ,
-		.speed = TWIM_MASTER_SPEED,
-		.chip = TARGET_ADDRESS,
-		.smbus = true
-};	
-
 int main (void)
 {
-	board_init();
-	initClock();						// set clock to 48MHz
-	gpioClock();						// output clock to gpio pin 6
+	// variables
+	uint32_t *USART3_BASE_ADDR = (uint32_t*)0xFFFF3C00;
+	uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
+	uint32_t *SPI_BASE_MAIN = (uint32_t*)0xFFFF4000;
+	uint32_t *TWIM1_BASE = (uint32_t *)0xFFFF4400;
+	int flash_data = 0x65;
+	int *flash_data_pointer = &flash_data;
+	int clr_rx;
+	int adc_ce_reg = 0x00;
+	int adc_ce_reg_pointer = &adc_ce_reg;
+	int i2c_dummy = 0x55;
+	int *i2c_dummy_p = &i2c_dummy;
+	
+	// initialization
+	initClock();			// set clock to 48MHz
+	board_init();			// mainly for communication profiles
+	gpioClock();			// output clock to gpio pin 6
 		
 	//enable write for flash chip
 	spi_put(SPI_BASE_MAIN, 0x06);
@@ -103,6 +91,7 @@ int main (void)
 	//set_adc_sample_rate(2,400);
 	//set_adc_ce(3, 1,adc_ce_reg_pointer);
 	
+	// main loop
 	while (1) {
 		int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
 		usart_putchar(USART3_BASE_ADDR, uart_data);									//echo back data

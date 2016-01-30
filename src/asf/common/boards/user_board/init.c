@@ -1,9 +1,7 @@
-/**
- * \file
- *
- * \brief User board initialization template
- *
- */
+/*
+*	init.c
+*	description: contains functions used to initialize PCB
+*/
 
 #include <asf.h>
 #include <board.h>
@@ -15,19 +13,34 @@
 #include "scif_uc3l.h"
 #include "twim.h"
 
+// uart config parameters
+static const usart_options_t USART_OPTIONS = {
+	.baudrate = 115200,
+	.charlength = 8,
+	.paritytype = USART_NO_PARITY,
+	.stopbits = USART_1_STOPBIT,
+	.channelmode = USART_NORMAL_CHMODE
+};
+static const usart_options_t USART_OPTIONS2 = {
+	.baudrate = 9600,
+	.charlength = 8,
+	.paritytype = USART_NO_PARITY,
+	.stopbits = USART_1_STOPBIT,
+	.channelmode = USART_NORMAL_CHMODE
+};
+
+/*
+* description: initializes PCB and peripherals such as uart, i2c, spi
+* args: none
+* return: none
+*/
 void board_init()
 {
-	uint32_t *TWIM1_BASE = (uint32_t *)0xFFFF4800;
-	//init gclk0
-	//uint32_t *GCLK0_CONTROL_BASE = (uint32_t*)0xFFFF1870;
-	//*GCLK0_CONTROL_BASE = 0x00000001;
-	//gpio_enable_module_pin(AVR32_SCIF_GCLK_0_1_PIN, AVR32_SCIF_GCLK_0_1_FUNCTION);
-
-//init GPIO
+	// init GPIO
 	gpio_enable_gpio_pin(AVR32_PIN_PA15);
 	gpio_enable_gpio_pin(AVR32_PIN_PA16);
 
-//Initial SPI pins
+	// Initial SPI pins
 	gpio_enable_module_pin(AVR32_SPI_SCK_0_1_PIN, AVR32_SPI_SCK_0_1_FUNCTION);				//Enable SCK
 	gpio_enable_module_pin(AVR32_SPI_MOSI_0_1_PIN, AVR32_SPI_MOSI_0_1_FUNCTION);			//Enable MOSI
 	gpio_enable_module_pin(AVR32_SPI_MISO_0_1_PIN, AVR32_SPI_MISO_0_1_FUNCTION);			//Enable MISO
@@ -35,94 +48,38 @@ void board_init()
 	gpio_enable_module_pin(AVR32_SPI_NPCS_2_0_PIN, AVR32_SPI_NPCS_2_0_FUNCTION);			//Enable CS2 (FPGA1)
 	gpio_enable_module_pin(AVR32_SPI_NPCS_3_0_PIN, AVR32_SPI_NPCS_3_0_FUNCTION);			//Enable CS3 (FPGA2)
 	
+	// set values for spi registers
 	uint32_t *SPI_BASE = (volatile uint32_t*)0xFFFF4000;
-	//*(SPI_BASE+0x04) = 0x00000053;				//init mode register
-	//*(SPI_BASE+0x30) = 0x00000202;				//init cs0 register
-	//*(SPI_BASE+0x00) = 0x00000001;
-	//WRITE_MR(0x00000013);
 	WRITE_MR(0x000E0011);
 	WRITE_CS0(0x00000502);
 	WRITE_CS3(0x00000502);
 	WRITE_CR(0x00000001);
-	
-	
-	
-	//spi_set_master_mode(SPI_BASE);
-	//spi_set_bits_per_transfer(SPI_BASE,0,8);
-	//spi_enable(SPI_BASE);
-	
-	//spi_set_chipselect(volatile avr32_spi_t *spi,uint8_t chip_select)
-	//spi_set_delay(volatile avr32_spi_t *spi,uint8_t delay)
-	
 
-//Initialize UART pins
-
-	//UART 2 is General Purpose
+	// Initialize UART pins
+	//UART 2 is motor driver
 	gpio_enable_module_pin(AVR32_USART2_TXD_0_0_PIN, AVR32_USART2_TXD_0_0_FUNCTION);			//UART 2 TX
 	gpio_enable_module_pin(AVR32_USART2_RXD_0_0_PIN, AVR32_USART2_RXD_0_0_FUNCTION);			//UART 2 RX
 	uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
 	
-	
 	//UART 3 is used to communicate with PC
 	gpio_enable_module_pin(AVR32_USART3_TXD_0_1_PIN, AVR32_USART3_TXD_0_1_FUNCTION);			//UART 3 TX
 	gpio_enable_module_pin(AVR32_USART3_RXD_0_1_PIN, AVR32_USART3_RXD_0_1_FUNCTION);			//UART 3 RX
-	//gpio_enable_gpio_pin(AVR32_PIN_PB07);
-	//gpio_enable_gpio_pin(AVR32_PIN_PB06);
 	uint32_t *USART3_BASE_ADDR = (uint32_t*)0xFFFF3C00;
-	/*
-	static const usart_options_t USART_OPTIONS = {
-		.baudrate = 9600,
-		.charlength = 8,
-		.paritytype = USART_NO_PARITY,
-		.stopbits = USART_1_STOPBIT,
-		.channelmode = USART_NORMAL_CHMODE
-	};
-	usart_init_rs232(USART3_BASE_ADDR, &USART_OPTIONS, 17200000);
-	*/
-	///*
-	static const usart_options_t USART_OPTIONS = {
-		.baudrate = 115200,
-		.charlength = 8,
-		.paritytype = USART_NO_PARITY,
-		.stopbits = USART_1_STOPBIT,
-		.channelmode = USART_NORMAL_CHMODE
-	};
 	
-	static const usart_options_t USART_OPTIONS2 = {
-		.baudrate = 9600,
-		.charlength = 8,
-		.paritytype = USART_NO_PARITY,
-		.stopbits = USART_1_STOPBIT,
-		.channelmode = USART_NORMAL_CHMODE
-	};
-	
+	// set uart baud rate and options
 	usart_init_rs232(USART3_BASE_ADDR, &USART_OPTIONS, 17200000);
 	usart_init_rs232(USART2_BASE_ADDR, &USART_OPTIONS2, 17200000);
-	//*/
-	// I think the init function enables tx and rx pins and sets all settings
-	//usart_set_async_baudrate(USART3_BASE_ADDR, 9600, 115000);
 	
-//Init I2C pins
-
-/*
-	static const twim_options_t TWIM_OPTIONS = {
-		.pba_hz = 17200000,
-		.speed = 100000,
-		.chip = 0x55,
-		.smbus = false
-	};
-*/
+	// initialize i2c pins
+	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);							//enable i2c clk
+	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);	//enable i2c data
 	
-	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);			//enable i2c clk
-	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);  //enable i2c data
-	//twim_master_init(TWIM1_BASE, &TWIM_OPTIONS); //have to initialize in main because the right clock frequency isnt set yet
-	
-//Initialize FGPA config pins
-	gpio_enable_gpio_pin(AVR32_PIN_PB05);					//init CCLK
-	gpio_enable_gpio_pin(AVR32_PIN_PA05);					//init DIN
-	gpio_enable_gpio_pin(AVR32_PIN_PA11);					//init PROGRAM_B
-	gpio_enable_gpio_pin(AVR32_PIN_PA22);					//init INIT_B
-	gpio_enable_gpio_pin(AVR32_PIN_PB10);					//init DONE
+	//Initialize FGPA config pins
+	gpio_enable_gpio_pin(AVR32_PIN_PB05);					// init CCLK
+	gpio_enable_gpio_pin(AVR32_PIN_PA05);					// init DIN
+	gpio_enable_gpio_pin(AVR32_PIN_PA11);					// init PROGRAM_B
+	gpio_enable_gpio_pin(AVR32_PIN_PA22);					// init INIT_B
+	gpio_enable_gpio_pin(AVR32_PIN_PB10);					// init DONE
 	
 	//set configuration flags
 	uint32_t cclk_config = GPIO_DIR_OUTPUT | GPIO_INIT_LOW;
@@ -140,6 +97,11 @@ void board_init()
 	 
 }
 
+/*
+* description: initializes gpio pins
+* args: none
+* return: none
+*/
 void initClock() {
 	scif_dfll_openloop_conf_t dfllconfig ={150,65};
 	
@@ -164,13 +126,15 @@ void initClock() {
 	
 }
 
-#define AVR32_GC_DIV_CLOCK                             0x00000001
+/*
+* description: outputs clock signal to gpio pin 6
+* args: none
+* return: none
+*/
 void gpioClock() {
-	// Note: for UC3L devices, the generic clock configurations are handled by the
-	// SCIF module.
+	// Note: for UC3L devices, the generic clock configurations are handled by the SCIF module.
 	// Setup gc to use the DFLL0 as source clock, divisor enabled, apply a division factor.
-	// Since the DFLL0 frequency is 96MHz, set the division factor to 2 to have a
-	// gclk frequency of 48MHz.
+	// Since the DFLL0 frequency is 96MHz, set the division factor to 2 to have a gclk frequency of 48MHz.
 	scif_gc_setup(AVR32_SCIF_GCLK_DFLL0_SSG, SCIF_GCCTRL_DFLL0, AVR32_GC_DIV_CLOCK, 2);
 
 	/* Now enable the generic clock */
