@@ -15,9 +15,6 @@
 #include "i2cfun.h"
 #include "fpga.h"
 
-#define WRITE_MR(val) ((*(volatile uint32_t *)0xFFFF4004) = (val))
-#define WRITE_TDR(val) ((*(volatile uint32_t *)0xFFFF400C) = (val))
-
 uint32_t *USART3_BASE_ADDR = (uint32_t*)0xFFFF3C00;
 uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
 uint32_t *SPI_BASE_MAIN = (uint32_t*)0xFFFF4000;

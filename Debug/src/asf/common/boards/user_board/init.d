@@ -77,7 +77,7 @@ src/asf/common/boards/user_board/init.d \
  ../src/asf/common/services/clock/pll.h \
  ../src/asf/common/services/clock/uc3l/pll.h \
  ../src/asf/avr32/drivers/twim/twim.h ../src/config/conf_twim.h \
- ../src/config/conf_board.h ../src/asf/uc3l0256.h \
+ ../src/config/conf_board.h ../src/uc3l0256.h \
  ../src/asf/avr32/drivers/gpio/gpio.h \
  ../src/asf/avr32/drivers/usart/usart.h \
  ../src/asf/avr32/drivers/spi/spi.h
@@ -242,7 +242,7 @@ c:\program\ files\ (x86)\atmel\atmel\ studio\ 6.0\extensions\atmel\avrgcc\3.4.0.
 
 ../src/config/conf_board.h:
 
-../src/asf/uc3l0256.h:
+../src/uc3l0256.h:
 
 ../src/asf/avr32/drivers/gpio/gpio.h:
 

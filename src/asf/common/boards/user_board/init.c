@@ -8,19 +8,14 @@
 #include <asf.h>
 #include <board.h>
 #include <conf_board.h>
-#include "asf/uc3l0256.h"
-#include "asf/avr32/drivers/gpio/gpio.h"
-#include "asf/avr32/drivers/usart/usart.h"
-#include "asf/avr32/drivers/spi/spi.h"
+#include "uc3l0256.h"
+#include "gpio.h"
+#include "usart.h"
+#include "spi.h"
 #include "scif_uc3l.h"
 #include "twim.h"
 
-#define WRITE_MR(val) ((*(volatile uint32_t *)0xFFFF4004) = (val))
-#define WRITE_CR(val) ((*(volatile uint32_t *)0xFFFF4000) = (val))
-#define WRITE_CS0(val) ((*(volatile uint32_t *)0xFFFF4030) = (val))
-#define WRITE_CS3(val) ((*(volatile uint32_t *)0xFFFF403C) = (val))
-
-void board_init(void)
+void board_init()
 {
 	uint32_t *TWIM1_BASE = (uint32_t *)0xFFFF4800;
 	//init gclk0
