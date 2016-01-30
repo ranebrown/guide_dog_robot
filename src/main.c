@@ -43,10 +43,9 @@ int main (void)
 	while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_RDRF_MASK) != AVR32_SPI_SR_RDRF_MASK );
 	
 	
-	//config FPGA
+	// configure FPGA
 	//unsigned int file_length = program_flash();
 	//echo_back_flash_data(file_length);
-	
 	usart_write_line(USART3_BASE_ADDR, "reading file length from flash...\r\n");
 	uint32_t file_length00 = 0;
 	uint32_t file_length3,file_length2,file_length1,file_length0;
@@ -61,15 +60,15 @@ int main (void)
 	file_length00 = file_length3<<24 | file_length2<<16 | file_length1<<8 | file_length0<<0 | 0;
 	usart_putchar(USART3_BASE_ADDR, 0x0D);
 	usart_putchar(USART3_BASE_ADDR, 0x0A);
-	
 	usart_write_line(USART3_BASE_ADDR, "Configuring FPGA...\r\n");
 	int is_not_configured = configure_fpga(file_length00);
-	
 	if (is_not_configured == 1){
 		usart_write_line(USART3_BASE_ADDR, "Configuration Failed\r\n");
 	} else {
 		usart_write_line(USART3_BASE_ADDR, "Configuration Complete!\r\n");
 	}
+	
+	// i2c configuration
 	gpio_enable_gpio_pin(AVR32_PIN_PA17);
 	gpio_enable_pin_pull_up(AVR32_PIN_PA17);
 	gpio_enable_pin_pull_up(AVR32_PIN_PB04);
@@ -77,6 +76,7 @@ int main (void)
 	//gpio_enable_module_pin(AVR32_TWIMS0_TWCK_0_2_PIN, AVR32_TWIMS0_TWCK_0_2_FUNCTION);
 	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);			//enable i2c clk
 	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);
+	// reading registers for debugging
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>16);
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>8);
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
@@ -86,10 +86,12 @@ int main (void)
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
 	*((volatile uint32_t*)(0xFFFF481C)) = 0x400;
 	WRITE_MR(0x00070011);
-	//set_adc_ce(3, 0,adc_ce_reg_pointer);															//set CS3 (TEMPORARY)
-	//set_adc_sample_rate(1,400);
-	//set_adc_sample_rate(2,400);
-	//set_adc_ce(3, 1,adc_ce_reg_pointer);
+	
+	// initialize ADC
+	set_adc_ce(3, 0,adc_ce_reg_pointer);															//set CS3 (TEMPORARY)
+	set_adc_sample_rate(1,400);
+	set_adc_sample_rate(2,400);
+	set_adc_ce(3, 1,adc_ce_reg_pointer);
 	
 	// main loop
 	while (1) {
