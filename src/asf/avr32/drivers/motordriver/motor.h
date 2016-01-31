@@ -1,6 +1,8 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+#include <stdint.h>
+
 // Commands
 #define QIK_GET_FIRMWARE_VERSION         0x81
 #define QIK_GET_ERROR_BYTE               0x82
