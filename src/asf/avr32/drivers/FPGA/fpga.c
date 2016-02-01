@@ -2,10 +2,10 @@
 #include "fpga.h"
 
 //returns the length of the file i - 4 -5
-unsigned int program_flash(){
+unsigned int program_flash(void){
 	
 	//erase the whole chip
-	spi_chip_erase(0);
+	spi_chip_erase();
 	
 	//first word (0x00000) will be the length in bytes of the config file
 	unsigned int i = 4;										//keeps track of how many bytes are programmed

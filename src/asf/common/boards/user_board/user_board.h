@@ -19,20 +19,20 @@
 * args: none
 * return: none
 */
-void board_init();
+void board_init(void);
 
 /*
 * description: initializes gpio pins
 * args: none
 * return: none
 */
-void initClock();
+void initClock(void);
 
 /*
 * description: outputs clock signal to gpio pin 6
 * args: none
 * return: none
 */
-void gpioClock();
+void gpioClock(void);
 
 #endif // USER_BOARD_H

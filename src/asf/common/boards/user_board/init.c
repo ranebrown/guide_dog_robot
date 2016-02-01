@@ -34,7 +34,7 @@ static const usart_options_t USART_OPTIONS2 = {
 * args: none
 * return: none
 */
-void board_init()
+void board_init(void)
 {
 	// init GPIO
 	gpio_enable_gpio_pin(AVR32_PIN_PA15);
@@ -102,7 +102,7 @@ void board_init()
 * args: none
 * return: none
 */
-void initClock() {
+void initClock(void) {
 	scif_dfll_openloop_conf_t dfllconfig ={150,65};
 	
 	// Configure and start the DFLL0 in open loop mode to generate a frequency of 96MHz.
@@ -131,7 +131,7 @@ void initClock() {
 * args: none
 * return: none
 */
-void gpioClock() {
+void gpioClock(void) {
 	// Note: for UC3L devices, the generic clock configurations are handled by the SCIF module.
 	// Setup gc to use the DFLL0 as source clock, divisor enabled, apply a division factor.
 	// Since the DFLL0 frequency is 96MHz, set the division factor to 2 to have a gclk frequency of 48MHz.

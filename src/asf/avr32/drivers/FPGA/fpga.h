@@ -7,7 +7,7 @@
 
 
 
-unsigned int program_flash();
+unsigned int program_flash(void);
 
 
 int echo_back_flash_data(int len);

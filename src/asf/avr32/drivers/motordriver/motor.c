@@ -6,13 +6,13 @@ void initMotor(long baud, unsigned char receivePin, unsigned char transmitPin, u
 
 }
 
-char getMotorFirmwareVersion() {
+char getMotorFirmwareVersion(void) {
 	char version;
 
 	return version;
 }
 
-uint8_t gettMotorErrors() {
+uint8_t gettMotorErrors(void) {
 	uint8_t error;
 
 	return error;
@@ -54,39 +54,39 @@ void settMotorBrakes(unsigned char m0Brake, unsigned char m1Brake) {
 
 }
 
-unsigned char getM0Current() {
+unsigned char getM0Current(void) {
 	unsigned char current;
 
 	return current;
 }
 
-unsigned char getM1Current() {
+unsigned char getM1Current(void) {
 	unsigned char current;
 
 	return current;
 }
 
-unsigned int getM0CurrentMilliamps() {
+unsigned int getM0CurrentMilliamps(void) {
 	unsigned int current;
 
 	return current;
 
 }
 
-unsigned int getM1CurrentMilliamps() {
+unsigned int getM1CurrentMilliamps(void) {
 	unsigned int current;
 
 	return current;
 
 }
 
-unsigned char getM0Speed() {
+unsigned char getM0Speed(void) {
 	unsigned char speed;
 
 	return speed;
 }
 
-unsigned char getM1Speed() {
+unsigned char getM1Speed(void) {
 	unsigned char speed;
 
 	return speed;

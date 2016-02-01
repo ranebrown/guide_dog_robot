@@ -41,9 +41,9 @@
 
 void initMotor(long baud, unsigned char receivePin, unsigned char transmitPin, unsigned char resetPin);
 
-char getMotorFirmwareVersion();
+char getMotorFirmwareVersion(void);
 
-int getMotorErrors();
+int getMotorErrors(void);
 
 int getMotorConfigurationParameter(int parameter);
 
@@ -61,16 +61,16 @@ void setM1Brake(unsigned char brake);
 
 void setMotorBrakes(unsigned char m0Brake, unsigned char m1Brake);
 
-unsigned char getM0Current();
+unsigned char getM0Current(void);
 
-unsigned char getM1Current();
+unsigned char getM1Current(void);
 
-unsigned int getM0CurrentMilliamps();
+unsigned int getM0CurrentMilliamps(void);
 
-unsigned int getM1CurrentMilliamps();
+unsigned int getM1CurrentMilliamps(void);
 
-unsigned char getM0Speed();
+unsigned char getM0Speed(void);
 
-unsigned char getM1Speed();
+unsigned char getM1Speed(void);
 
 #endif // MOTOR_H

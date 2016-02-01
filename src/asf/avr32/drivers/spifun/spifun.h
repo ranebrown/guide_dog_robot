@@ -13,7 +13,7 @@
 /*	 \brief Unlock the flash chip                                                                     
 */
 /************************************************************************/
-extern int spi_unlock_flash();
+extern int spi_unlock_flash(void);
 
 
 /************************************************************************/
@@ -29,7 +29,7 @@ extern int spi_64k_erase(int addr32);
 /*	\brief Erase the whole flash chip                                                                     
 */
 /************************************************************************/
-extern int spi_chip_erase();
+extern int spi_chip_erase(void);
 
 
 /************************************************************************/
@@ -55,6 +55,6 @@ extern unsigned int spi_read_flash(int addr32);
 /*	\brief Return the value of the flash chips status register (see datasheet)                                                                      
 */
 /************************************************************************/
-extern int spi_read_status();
+extern int spi_read_status(void);
 
 #endif

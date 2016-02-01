@@ -25,7 +25,7 @@ int i2c_set_speed (uint32_t speed,uint32_t pba_hz)
 	return 1;
 }
 
-void i2c_init(){
+void i2c_init(void){
 	i2c_set_speed(100000,17200000);
 	*(volatile uint32_t *)0xFFFF4424 = 0x0000ffff;					//disable interupts
 	*(volatile uint32_t *)0xFFFF4400 = 0x00000021;					//enable master interface
@@ -64,7 +64,7 @@ int i2c_read(int addr,int numbytes){
 	return temp;
 }
 
-int getLidar(){
+int getLidar(void){
 	int val = -1;
 	char data1[2] = {0x00,0x04};
 	char data2 = 0x8f;

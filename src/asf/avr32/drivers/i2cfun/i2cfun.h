@@ -17,7 +17,7 @@ int i2c_set_speed(uint32_t speed,uint32_t pba_hz);
 /*	\brief Initialize I2C
  */
 /************************************************************************/
-void i2c_init();
+void i2c_init(void);
 
 
 /************************************************************************/
@@ -44,7 +44,7 @@ int i2c_read(int addr,int numbytes);
 /*	\brief Return Lidar distance measurment
  */
 /************************************************************************/
-int getLidar();
+int getLidar(void);
 
 
 #endif

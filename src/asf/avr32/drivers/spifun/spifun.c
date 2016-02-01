@@ -1,7 +1,7 @@
 
 #include "spifun.h"
 
-int spi_unlock_flash(){
+int spi_unlock_flash(void){
 	int i, rx_data;
 	//write enable
 	*(volatile uint32_t*)0xFFFF400C = 0x06;	//send data to TX reg
@@ -53,7 +53,7 @@ int spi_64k_erase(int addr32){
 	return;
 }
 
-int spi_chip_erase(){
+int spi_chip_erase(void){
 	int i, rx_data;
 	
 	//write enable 0x06
@@ -112,7 +112,7 @@ unsigned int spi_read_flash(int addr32){
 	return (rx_data);
 }
 
-int spi_read_status(){
+int spi_read_status(void){
 	*(volatile uint32_t*)0xFFFF400C = (0x05);															//send data to TX reg (op code)
 	while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_RDRF_MASK) != AVR32_SPI_SR_RDRF_MASK ); //wait for rx buffer to be full
 	*(volatile uint32_t*)0xFFFF400C = (0xFF);															//send data to TX reg (dummy byte)
