@@ -1,3 +1,7 @@
+# ignore build directories
+Debug/
+Release/
+
 *.cof
 *.hex
 *.obj
