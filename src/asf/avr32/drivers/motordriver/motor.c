@@ -6,25 +6,25 @@ void initMotor(long baud, unsigned char receivePin, unsigned char transmitPin, u
 
 }
 
-char getFirmwareVersion() {
+char getMotorFirmwareVersion() {
 	char version;
 
 	return version;
 }
 
-uint8_t getErrors() {
+uint8_t gettMotorErrors() {
 	uint8_t error;
 
 	return error;
 }
 
-uint8_t getConfigurationParameter(uint8_t parameter) {
+uint8_t gettMotorConfigurationParameter(uint8_t parameter) {
 	uint8_t res;
 
 	return res;
 }
 
-uint8_t	setConfigurationParameter(uint8_t parameter, uint8_t value) {
+uint8_t	settMotorConfigurationParameter(uint8_t parameter, uint8_t value) {
 	uint8_t res;
 
 	return res;
@@ -38,7 +38,7 @@ void setM1Speed(int speed) {
 
 }
 
-void setSpeeds(int m0Speed, int m1Speed) {
+void settMotorSpeeds(int m0Speed, int m1Speed) {
 
 }
 
@@ -50,7 +50,7 @@ void setM1Brake(unsigned char brake) {
 
 }
 
-void setBrakes(unsigned char m0Brake, unsigned char m1Brake) {
+void settMotorBrakes(unsigned char m0Brake, unsigned char m1Brake) {
 
 }
 

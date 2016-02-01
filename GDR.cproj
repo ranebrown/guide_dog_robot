@@ -204,86 +204,89 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <Avr32Gcc>
-        <avr32gcc.common.outputfiles.hex>True</avr32gcc.common.outputfiles.hex>
-        <avr32gcc.common.outputfiles.lss>True</avr32gcc.common.outputfiles.lss>
-        <avr32gcc.common.outputfiles.eep>True</avr32gcc.common.outputfiles.eep>
-        <avr32gcc.compiler.symbols.DefSymbols>
-          <ListValues>
-            <Value>BOARD=USER_BOARD</Value>
-          </ListValues>
-        </avr32gcc.compiler.symbols.DefSymbols>
-        <avr32gcc.compiler.directories.IncludePaths>
-          <ListValues>
-            <Value>../src</Value>
-            <Value>../src/asf/avr32/drivers/intc</Value>
-            <Value>../src/asf/avr32/utils</Value>
-            <Value>../src/asf/avr32/utils/preprocessor</Value>
-            <Value>../src/asf/common/applications/user_application/user_board</Value>
-            <Value>../src/asf/common/boards</Value>
-            <Value>../src/asf/common/boards/user_board</Value>
-            <Value>../src/asf/common/utils</Value>
-            <Value>../src/config</Value>
-            <Value>../src/asf/avr32/drivers/flashcdw</Value>
-            <Value>../src/asf/common/services/clock</Value>
-            <Value>../src/asf/avr32/drivers/pm</Value>
-            <Value>../src/asf/avr32/drivers/scif</Value>
-            <Value>../src/asf/avr32/drivers/twim</Value>
-            <Value>../src/asf/avr32/drivers/i2cfun</Value>
-            <Value>../src/asf/avr32/drivers/gpio</Value>
-            <Value>../src/asf/avr32/drivers/usart</Value>
-            <Value>../src/asf/avr32/drivers/spi</Value>
-            <Value>../src/asf/avr32/drivers/spifun</Value>
-            <Value>../src/asf/avr32/drivers/FPGA</Value>
-          </ListValues>
-        </avr32gcc.compiler.directories.IncludePaths>
-        <avr32gcc.compiler.optimization.level>Optimize (-O1)</avr32gcc.compiler.optimization.level>
-        <avr32gcc.compiler.optimization.OtherFlags>-fdata-sections</avr32gcc.compiler.optimization.OtherFlags>
-        <avr32gcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</avr32gcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
-        <avr32gcc.compiler.optimization.DebugLevel>Maximum (-g3)</avr32gcc.compiler.optimization.DebugLevel>
-        <avr32gcc.compiler.warnings.AllWarnings>True</avr32gcc.compiler.warnings.AllWarnings>
-        <avr32gcc.compiler.miscellaneous.OtherFlags>-Werror-implicit-function-declaration -Wmissing-prototypes -Wpointer-arith -Wstrict-prototypes -mno-cond-exec-before-reload -mrelax -std=gnu99</avr32gcc.compiler.miscellaneous.OtherFlags>
-        <avr32gcc.linker.general.DoNotUseStandardStartFiles>True</avr32gcc.linker.general.DoNotUseStandardStartFiles>
-        <avr32gcc.linker.optimization.GarbageCollectUnusedSections>True</avr32gcc.linker.optimization.GarbageCollectUnusedSections>
-        <avr32gcc.linker.miscellaneous.LinkerFlags>-Wl,--relax -Wl,-e,_trampoline</avr32gcc.linker.miscellaneous.LinkerFlags>
-        <avr32gcc.assembler.general.AssemblerFlags>-mrelax</avr32gcc.assembler.general.AssemblerFlags>
-        <avr32gcc.assembler.general.IncludePaths>
-          <ListValues>
-            <Value>../src</Value>
-            <Value>../src/asf/avr32/drivers/intc</Value>
-            <Value>../src/asf/avr32/utils</Value>
-            <Value>../src/asf/avr32/utils/preprocessor</Value>
-            <Value>../src/asf/common/applications/user_application/user_board</Value>
-            <Value>../src/asf/common/boards</Value>
-            <Value>../src/asf/common/boards/user_board</Value>
-            <Value>../src/asf/common/utils</Value>
-            <Value>../src/config</Value>
-            <Value>../src/asf/avr32/drivers/flashcdw</Value>
-            <Value>../src/asf/common/services/clock</Value>
-            <Value>../src/asf/avr32/drivers/pm</Value>
-            <Value>../src/asf/avr32/drivers/scif</Value>
-            <Value>../src/asf/avr32/drivers/twim</Value>
-          </ListValues>
-        </avr32gcc.assembler.general.IncludePaths>
-        <avr32gcc.preprocessingassembler.general.AssemblerFlags>-DBOARD=USER_BOARD -mrelax</avr32gcc.preprocessingassembler.general.AssemblerFlags>
-        <avr32gcc.preprocessingassembler.general.IncludePaths>
-          <ListValues>
-            <Value>../src</Value>
-            <Value>../src/asf/avr32/drivers/intc</Value>
-            <Value>../src/asf/avr32/utils</Value>
-            <Value>../src/asf/avr32/utils/preprocessor</Value>
-            <Value>../src/asf/common/applications/user_application/user_board</Value>
-            <Value>../src/asf/common/boards</Value>
-            <Value>../src/asf/common/boards/user_board</Value>
-            <Value>../src/asf/common/utils</Value>
-            <Value>../src/config</Value>
-            <Value>../src/asf/avr32/drivers/flashcdw</Value>
-            <Value>../src/asf/common/services/clock</Value>
-            <Value>../src/asf/avr32/drivers/pm</Value>
-            <Value>../src/asf/avr32/drivers/scif</Value>
-            <Value>../src/asf/avr32/drivers/twim</Value>
-          </ListValues>
-        </avr32gcc.preprocessingassembler.general.IncludePaths>
-      </Avr32Gcc>
+  <avr32gcc.common.outputfiles.hex>True</avr32gcc.common.outputfiles.hex>
+  <avr32gcc.common.outputfiles.lss>True</avr32gcc.common.outputfiles.lss>
+  <avr32gcc.common.outputfiles.eep>True</avr32gcc.common.outputfiles.eep>
+  <avr32gcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>BOARD=USER_BOARD</Value>
+    </ListValues>
+  </avr32gcc.compiler.symbols.DefSymbols>
+  <avr32gcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>../src</Value>
+      <Value>../src/asf/avr32/drivers/intc</Value>
+      <Value>../src/asf/avr32/utils</Value>
+      <Value>../src/asf/avr32/utils/preprocessor</Value>
+      <Value>../src/asf/common/applications/user_application/user_board</Value>
+      <Value>../src/asf/common/boards</Value>
+      <Value>../src/asf/common/boards/user_board</Value>
+      <Value>../src/asf/common/utils</Value>
+      <Value>../src/config</Value>
+      <Value>../src/asf/avr32/drivers/flashcdw</Value>
+      <Value>../src/asf/common/services/clock</Value>
+      <Value>../src/asf/avr32/drivers</Value>
+      <Value>../src/asf</Value>
+      <Value>../src/asf/avr32/drivers/pm</Value>
+      <Value>../src/asf/avr32/drivers/FPGA</Value>
+      <Value>../src/asf/avr32/drivers/gpio</Value>
+      <Value>../src/asf/avr32/drivers/i2cfun</Value>
+      <Value>../src/asf/avr32/drivers/motordriver</Value>
+      <Value>../src/asf/avr32/drivers/scif</Value>
+      <Value>../src/asf/avr32/drivers/spi</Value>
+      <Value>../src/asf/avr32/drivers/spifun</Value>
+      <Value>../src/asf/avr32/drivers/twim</Value>
+      <Value>../src/asf/avr32/drivers/usart</Value>
+    </ListValues>
+  </avr32gcc.compiler.directories.IncludePaths>
+  <avr32gcc.compiler.optimization.level>Optimize (-O1)</avr32gcc.compiler.optimization.level>
+  <avr32gcc.compiler.optimization.OtherFlags>-fdata-sections</avr32gcc.compiler.optimization.OtherFlags>
+  <avr32gcc.compiler.optimization.PrepareFunctionsForGarbageCollection>True</avr32gcc.compiler.optimization.PrepareFunctionsForGarbageCollection>
+  <avr32gcc.compiler.optimization.DebugLevel>Maximum (-g3)</avr32gcc.compiler.optimization.DebugLevel>
+  <avr32gcc.compiler.warnings.AllWarnings>True</avr32gcc.compiler.warnings.AllWarnings>
+  <avr32gcc.compiler.miscellaneous.OtherFlags>-Werror-implicit-function-declaration -Wmissing-prototypes -Wpointer-arith -Wstrict-prototypes -mno-cond-exec-before-reload -mrelax -std=gnu99</avr32gcc.compiler.miscellaneous.OtherFlags>
+  <avr32gcc.linker.general.DoNotUseStandardStartFiles>True</avr32gcc.linker.general.DoNotUseStandardStartFiles>
+  <avr32gcc.linker.optimization.GarbageCollectUnusedSections>True</avr32gcc.linker.optimization.GarbageCollectUnusedSections>
+  <avr32gcc.linker.miscellaneous.LinkerFlags>-Wl,--relax -Wl,-e,_trampoline</avr32gcc.linker.miscellaneous.LinkerFlags>
+  <avr32gcc.assembler.general.AssemblerFlags>-mrelax</avr32gcc.assembler.general.AssemblerFlags>
+  <avr32gcc.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>../src</Value>
+      <Value>../src/asf/avr32/drivers/intc</Value>
+      <Value>../src/asf/avr32/utils</Value>
+      <Value>../src/asf/avr32/utils/preprocessor</Value>
+      <Value>../src/asf/common/applications/user_application/user_board</Value>
+      <Value>../src/asf/common/boards</Value>
+      <Value>../src/asf/common/boards/user_board</Value>
+      <Value>../src/asf/common/utils</Value>
+      <Value>../src/config</Value>
+      <Value>../src/asf/avr32/drivers/flashcdw</Value>
+      <Value>../src/asf/common/services/clock</Value>
+      <Value>../src/asf/avr32/drivers/pm</Value>
+      <Value>../src/asf/avr32/drivers/scif</Value>
+      <Value>../src/asf/avr32/drivers/twim</Value>
+    </ListValues>
+  </avr32gcc.assembler.general.IncludePaths>
+  <avr32gcc.preprocessingassembler.general.AssemblerFlags>-DBOARD=USER_BOARD -mrelax</avr32gcc.preprocessingassembler.general.AssemblerFlags>
+  <avr32gcc.preprocessingassembler.general.IncludePaths>
+    <ListValues>
+      <Value>../src</Value>
+      <Value>../src/asf/avr32/drivers/intc</Value>
+      <Value>../src/asf/avr32/utils</Value>
+      <Value>../src/asf/avr32/utils/preprocessor</Value>
+      <Value>../src/asf/common/applications/user_application/user_board</Value>
+      <Value>../src/asf/common/boards</Value>
+      <Value>../src/asf/common/boards/user_board</Value>
+      <Value>../src/asf/common/utils</Value>
+      <Value>../src/config</Value>
+      <Value>../src/asf/avr32/drivers/flashcdw</Value>
+      <Value>../src/asf/common/services/clock</Value>
+      <Value>../src/asf/avr32/drivers/pm</Value>
+      <Value>../src/asf/avr32/drivers/scif</Value>
+      <Value>../src/asf/avr32/drivers/twim</Value>
+    </ListValues>
+  </avr32gcc.preprocessingassembler.general.IncludePaths>
+</Avr32Gcc>
     </ToolchainSettings>
     <GenerateHexFile>True</GenerateHexFile>
     <GenerateMapFile>True</GenerateMapFile>
@@ -319,6 +322,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\asf\avr32\drivers\intc\intc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\asf\avr32\drivers\motordriver\motor.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\asf\avr32\drivers\motordriver\motor.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\asf\avr32\drivers\pm\pm_uc3l.c">
@@ -496,6 +505,7 @@
     <Folder Include="src\asf\avr32\drivers\gpio\" />
     <Folder Include="src\asf\avr32\drivers\i2cfun\" />
     <Folder Include="src\asf\avr32\drivers\intc\" />
+    <Folder Include="src\asf\avr32\drivers\motordriver\" />
     <Folder Include="src\asf\avr32\drivers\pm\" />
     <Folder Include="src\asf\avr32\drivers\scif\" />
     <Folder Include="src\asf\avr32\drivers\spifun\" />

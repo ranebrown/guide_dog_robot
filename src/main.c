@@ -14,6 +14,7 @@
 #include "spifun.h"
 #include "i2cfun.h"
 #include "fpga.h"
+#include "motor.h"
 
 int main (void)
 {

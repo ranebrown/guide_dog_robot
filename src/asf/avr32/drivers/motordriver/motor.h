@@ -41,25 +41,25 @@
 
 void initMotor(long baud, unsigned char receivePin, unsigned char transmitPin, unsigned char resetPin);
 
-char getFirmwareVersion();
+char getMotorFirmwareVersion();
 
-int getErrors();
+int getMotorErrors();
 
-int getConfigurationParameter(int parameter);
+int getMotorConfigurationParameter(int parameter);
 
-int	setConfigurationParameter(int parameter, int value);
+int	setMotorConfigurationParameter(int parameter, int value);
 
 void setM0Speed(int speed);
 
 void setM1Speed(int speed);
 
-void setSpeeds(int m0Speed, int m1Speed);
+void setMotorSpeeds(int m0Speed, int m1Speed);
 
 void setM0Brake(unsigned char brake);
 
 void setM1Brake(unsigned char brake);
 
-void setBrakes(unsigned char m0Brake, unsigned char m1Brake);
+void setMotorBrakes(unsigned char m0Brake, unsigned char m1Brake);
 
 unsigned char getM0Current();
 
