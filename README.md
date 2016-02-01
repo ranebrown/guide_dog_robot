@@ -1,4 +1,5 @@
 # Guide Dog Robot Software
+This is an Atmel Studio project that contains the software for the guide dog robot project. All source files are run on a custom PCB that utilizes a 32 bit microcontroller in conjunction with a FPGA.
 
 ## General Information
 FPGA modules built using Xilinx Design Suite
@@ -17,3 +18,5 @@ PCB programmed with AVR JTAGICE XPII
 ## TODO
 * code cleanup
 * function descriptions
+* address warnings, currently > 100
+* unit tests for functions
