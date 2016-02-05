@@ -44,3 +44,5 @@ Release/
 *.app
 
 *.swp
+
+*.pyc
