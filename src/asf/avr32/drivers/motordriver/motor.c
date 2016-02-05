@@ -1,5 +1,6 @@
 #include "motor.h"
 #include "gpio.h"
+#include "usart.h"
 
 uint8_t cmd[5]; // serial command buffer
 
