@@ -38,31 +38,31 @@ import ycm_core
 flags = [
 	'-Wall',
 	'-Wextra',
-        '-I', 'src'
-        '-I', 'src/asf'
-        '-I', 'src/asf/avr32/drivers/flashcdw'
-        '-I', 'src/asf/avr32/drivers/FPGA'
-        '-I', 'src/asf/avr32/drivers/gpio'
-        '-I', 'src/asf/avr32/drivers/i2cfun'
-        '-I', 'src/asf/avr32/drivers/intc'
-        '-I', 'src/asf/avr32/drivers/motordriver'
-        '-I', 'src/asf/avr32/drivers/pm'
-        '-I', 'src/asf/avr32/drivers/scif'
-        '-I', 'src/asf/avr32/drivers/spi'
-        '-I', 'src/asf/avr32/drivers/spifun'
-        '-I', 'src/asf/avr32/drivers/twim'
-        '-I', 'src/asf/avr32/drivers/usart'
-        '-I', 'src/asf/avr32/utils'
-        '-I', 'src/asf/avr32/utils/header_files'
-        '-I', 'src/asf/avr32/utils/preprocessor'
-        '-I', 'src/asf/avr32/utils/startup'
-        '-I', 'src/asf/common/boards'
-        '-I', 'src/asf/common/boards/user_board'
-        '-I', 'src/asf/common/services/clock'
-        '-I', 'src/asf/common/services/clock/uc3l'
-        '-I', 'src/asf/common/utils'
-        '-I', 'src/asf/common/utils/interrupt'
-        '-I', 'src/config'
+        '-I', 'src',
+        '-I', 'src/asf',
+        '-I', 'src/asf/avr32/drivers/flashcdw',
+        '-I', 'src/asf/avr32/drivers/FPGA',
+        '-I', 'src/asf/avr32/drivers/gpio',
+        '-I', 'src/asf/avr32/drivers/i2cfun',
+        '-I', 'src/asf/avr32/drivers/intc',
+        '-I', 'src/asf/avr32/drivers/motordriver',
+        '-I', 'src/asf/avr32/drivers/pm',
+        '-I', 'src/asf/avr32/drivers/scif',
+        '-I', 'src/asf/avr32/drivers/spi',
+        '-I', 'src/asf/avr32/drivers/spifun',
+        '-I', 'src/asf/avr32/drivers/twim',
+        '-I', 'src/asf/avr32/drivers/usart',
+        '-I', 'src/asf/avr32/utils',
+        '-I', 'src/asf/avr32/utils/header_files',
+        '-I', 'src/asf/avr32/utils/preprocessor',
+        '-I', 'src/asf/avr32/utils/startup',
+        '-I', 'src/asf/common/boards',
+        '-I', 'src/asf/common/boards/user_board',
+        '-I', 'src/asf/common/services/clock',
+        '-I', 'src/asf/common/services/clock/uc3l',
+        '-I', 'src/asf/common/utils',
+        '-I', 'src/asf/common/utils/interrupt',
+        '-I', 'src/config',
 	# THIS IS IMPORTANT! Without a "-std=<something>" flag, clang won't know which
 	# language to use when compiling headers. So it will guess. Badly. So C++
 	# headers will be compiled as C headers. You don't want that so ALWAYS specify
