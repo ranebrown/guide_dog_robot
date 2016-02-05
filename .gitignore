@@ -42,3 +42,5 @@ Release/
 *.exe
 *.out
 *.app
+
+*.swp
