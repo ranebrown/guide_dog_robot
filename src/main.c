@@ -16,6 +16,22 @@
 #include "fpga.h"
 #include "motor.h"
 
+//GLOBALS
+
+/*Magnetometer axis*/
+int mag_x;
+int MAG_XP = (uint32_t*)(&mag_x);
+int mag_y;
+int MAG_YP = (uint32_t*)(&mag_y);
+int mag_z;
+int MAG_ZP = (uint32_t*)(&mag_z);
+
+/* i2c buffer */
+char I2C_BUFFER[32];
+char *I2C_BUFFERP = (char*)(&I2C_BUFFER);
+
+
+
 int main (void)
 {
 	// variables
@@ -101,7 +117,7 @@ int main (void)
 		//gpio_enable_gpio_pin(AVR32_PIN_PA17);
 		spi_write_FPGA(0, 0x80, (uart_data-48));									//write data to LED control reg
 		//usart_putchar(USART2_BASE_ADDR, 0x0D);
-		int lidar = getLidar();
+		int lidar = getLidar(I2C_BUFFERP);
 		//send_binary_to_terminal(lidar>>8);
 		//send_binary_to_terminal(lidar);		
 		//gpio_tgl_gpio_pin(AVR32_PIN_PA17);					

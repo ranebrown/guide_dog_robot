@@ -46,10 +46,8 @@ int i2c_write(int addr,char * data,int numbytes){
 	return 1;
 }
 
-int i2c_read(int addr,int numbytes){
-	char data[numbytes];
+int i2c_read(int addr,int numbytes,char *i2c_buffer){
 	int i;
-	int temp = 0;
 	*(volatile uint32_t *)0xFFFF440C = 0x0000E000 | ( (0x7F & addr) << 1 ) | ((0xFF & numbytes)<<16) | 1;
 	for (i = 0; i < numbytes; i++){
 		while(!(*((volatile uint32_t*)(0xFFFF441C)) & 1)){
@@ -58,13 +56,12 @@ int i2c_read(int addr,int numbytes){
 				return 0;
 			}
 		}
-		data[i] = *(volatile uint32_t *)0xFFFF4414;
-		temp = temp<<8 | data[i];
+		*(volatile char *)i2c_buffer++ = *(volatile uint32_t *)0xFFFF4414;
 	}
-	return temp;
+	return 1;
 }
 
-int getLidar(void){
+int getLidar(char *i2c_buffer){
 	int val = -1;
 	char data1[2] = {0x00,0x04};
 	char data2 = 0x8f;
@@ -72,6 +69,23 @@ int getLidar(void){
 	val = val*2;
 	i2c_write(0x62,&data2,1);
 	val = val*2;
-	val = i2c_read(0x62,2);
+	i2c_read(0x62,2,i2c_buffer);
+	val = *i2c_buffer<<8 | *(i2c_buffer+1);
+	//TODO: convert to feet/inches
 	return val;
+}
+
+void magInit(){
+	char data[2] = {0x02,0x00};
+	i2c_write(MAGNETOMETER_ADDRESS,&data,2);
+}	
+
+int getMagnetometer(int *X, int *Y, int *Z, int *angle,char *i2c_buffer){
+	char data = 0x03;
+	i2c_write(MAGNETOMETER_ADDRESS,&data,1);
+	i2c_read(MAGNETOMETER_ADDRESS,6,i2c_buffer);
+	*X = *i2c_buffer++<<8 | *i2c_buffer++;
+	*Z = *i2c_buffer++<<8 | *i2c_buffer++;
+	*Y = *i2c_buffer++<<8 | *i2c_buffer;
+	//TODO: calculate angle
 }

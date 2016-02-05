@@ -2,6 +2,8 @@
 #define _I2CFUN_
 #include <stdint.h>
 
+#define MAGNETOMETER_ADDRESS 0x1E
+
 
 /************************************************************************/
 /*	\brief Set i2c bus speed
@@ -38,13 +40,19 @@ int i2c_write(int addr,char * data,int numbytes);
 	\param numbytes			number of bytes to read
  */
 /************************************************************************/
-int i2c_read(int addr,int numbytes);
+int i2c_read(int addr,int numbytes,char *i2c_buffer);
 
 /************************************************************************/
 /*	\brief Return Lidar distance measurment
  */
 /************************************************************************/
-int getLidar(void);
+int getLidar(char *i2c_buffer);
+
+
+
+void magInit();
+
+int getMagnetometer(int *X, int *Y, int *Z, int *angle,char *i2c_buffer);
 
 
 #endif
