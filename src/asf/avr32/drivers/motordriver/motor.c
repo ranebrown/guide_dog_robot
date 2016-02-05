@@ -1,9 +1,21 @@
 #include "motor.h"
+#include "gpio.h"
 
 uint8_t cmd[5]; // serial command buffer
 
-void initMotor(long baud, unsigned char receivePin, unsigned char transmitPin, unsigned char resetPin) {
+void initMotor(uint32_t resetPin) {
+	// uart options set inside init.c
+	uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
 
+	// reset qik
+	// pulling pin low resests qik (normally pulled high)
+	gpio_enable_gpio_pin(resetPin);
+	gpio_configure_pin(resetPin, GPIO_DIR_OUTPUT);
+	gpio_set_pin_low(resetPin);
+	gpio_configure_pin(resetPin, GPIO_DIR_INPUT);
+
+	// set qik to auto detect baud rate
+	usart_putchar(USART2_BASE_ADDR, 0xAA);
 }
 
 char getMotorFirmwareVersion(void) {
