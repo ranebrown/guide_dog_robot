@@ -39,7 +39,7 @@
 #define QIK_CONFIG_MOTOR_M0_CURRENT_LIMIT_RESPONSE 10
 #define QIK_CONFIG_MOTOR_M1_CURRENT_LIMIT_RESPONSE 11
 
-void initMotor(long baud, unsigned char receivePin, unsigned char transmitPin, unsigned char resetPin);
+void initMotor(uint32_t resetPin);
 
 char getMotorFirmwareVersion(void);
 

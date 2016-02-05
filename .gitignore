@@ -42,3 +42,9 @@ Release/
 *.exe
 *.out
 *.app
+
+*.swp
+
+*.pyc
+
+tags

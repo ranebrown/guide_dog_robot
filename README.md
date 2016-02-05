@@ -20,5 +20,6 @@ PCB programmed with AVR JTAGICE XPII
 * function descriptions
 * address warnings, currently > 100
 * unit tests for functions
-
 * in getLidar(), convert to proper units
+* gpio.h includes avr32/io.h (this is missing)
+
