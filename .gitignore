@@ -48,3 +48,5 @@ Release/
 *.pyc
 
 tags
+
+*.atsuo
