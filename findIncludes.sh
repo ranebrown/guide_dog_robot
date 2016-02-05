@@ -16,5 +16,6 @@ sorted_unique=`tr ' ' '\n' <<< "${arr[@]}" | sort -u | tr '\n' ' '`
 # loop through unique values and print one per line
 for i in ${sorted_unique[@]}; 
 do
-	echo "'"'-I'"'", "'"$i"'"
+	#echo "'"'-I'"'", "'"$i"'"
+	echo '-I'$i
 done
