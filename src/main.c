@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 // project specific includes
-#include <asf.h> // includes everything added with ASF wizard
+#include "asf.h" // includes everything added with ASF wizard
 #include "gpio.h"
 #include "usart.h"
 #include "spi.h"
