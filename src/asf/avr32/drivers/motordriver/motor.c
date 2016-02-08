@@ -182,16 +182,72 @@ int	settMotorConfigurationParameter(int parameter, int value) {
 	}
 }
 
+/* sets motor m0 speed
+ * speed values -127 to 127 (negative values are for reverse)
+ */
 void setM0Speed(int speed) {
-
+	int reverse = 0;
+	int cmd1 = 0, cmd2 = 0;
+	int s1 = -1; s2 = -1;
+	
+	// check if the requested speed is for reverse
+	if(speed < 0) {
+		speed = -speed;
+		reverse = 1;
+	}
+	
+	// max speed check
+	if(speed > 255)
+		speed = 255;
+	
+	// actual speed is an 8 bit value -127 to 127
+	if(speed > 127) {
+		cmd1 = reverse ? QIK_MOTOR_M0_REVERSE_8_BIT : QIK_MOTOR_M0_FORWARD_8_BIT;
+		cmd2 = speed - 128;
+	}
+	else {
+		cmd1 = reverse ? QIK_MOTOR_M0_REVERSE : QIK_MOTOR_M0_FORWARD;
+		cmd2 = speed;
+	}
+	s1 = usart_putchar(USART2_BASE_ADDR, cmd1);
+	s2 = usart_putchar(USART2_BASE_ADDR, cmd2);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+		// TODO error handling
 }
 
 void setM1Speed(int speed) {
-
+	int reverse = 0;
+	int cmd1 = 0, cmd2 = 0;
+	int s1 = -1; s2 = -1;
+	
+	// check if the requested speed is for reverse
+	if(speed < 0) {
+		speed = -speed;
+		reverse = 1;
+	}
+	
+	// max speed check
+	if(speed > 255)
+	speed = 255;
+	
+	// actual speed is an 8 bit value -127 to 127
+	if(speed > 127) {
+		cmd1 = reverse ? QIK_MOTOR_M1_REVERSE_8_BIT : QIK_MOTOR_M1_FORWARD_8_BIT;
+		cmd2 = speed - 128;
+	}
+	else {
+		cmd1 = reverse ? QIK_MOTOR_M1_REVERSE : QIK_MOTOR_M1_FORWARD;
+		cmd2 = speed;
+	}
+	s1 = usart_putchar(USART2_BASE_ADDR, cmd1);
+	s2 = usart_putchar(USART2_BASE_ADDR, cmd2);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+		// TODO error handling
 }
 
 void settMotorSpeeds(int m0Speed, int m1Speed) {
-
+	setM0Speed(m0Speed);
+	setM1Speed(m1Speed);
 }
 
 void setM0Brake(unsigned char brake) {
