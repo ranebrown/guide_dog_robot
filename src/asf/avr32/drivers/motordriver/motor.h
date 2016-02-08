@@ -55,11 +55,11 @@ void setM1Speed(int speed);
 
 void setMotorSpeeds(int m0Speed, int m1Speed);
 
-void setM0Brake(unsigned char brake);
+void setM0Brake(int brake);
 
-void setM1Brake(unsigned char brake);
+void setM1Brake(int brake);
 
-void setMotorBrakes(unsigned char m0Brake, unsigned char m1Brake);
+void setMotorBrakes(int m0Brake, int m1Brake);
 
 unsigned char getM0Current(void);
 
