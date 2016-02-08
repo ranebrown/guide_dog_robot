@@ -88,7 +88,25 @@ int gettMotorErrors(void) {
 	}
 }
 
-
+/* 
+ * qik has 12 config parameters
+ * these parameters have limited r/w and should only by adjusted/read occasionally
+ * see manual for more detailed description and acceptable values for the parameters
+ * 0: device id
+ * 1: PWM 
+ * 2: shutdown motors on error
+ * 3: serial timeout
+ * 4: motor m0 acceleration
+ * 5: motor m1 acceleration
+ * 6: motor m0 brake duration
+ * 7: motor m1 brake duration
+ * 8: motor m0 current limit/2
+ * 9: motor m1 current limit/2
+ * 10: motor m0 current-limit response
+ * 11: motor m1 current-limit response
+ *
+ * returns the value of requested parameter for success, else returns -1
+ */
 int gettMotorConfigurationParameter(int parameter) {
 	// variables
 	int res = -1;
@@ -115,11 +133,53 @@ int gettMotorConfigurationParameter(int parameter) {
 			return -1;
 	}			
 }
-
-int	settMotorConfigurationParameter(uint8_t parameter, uint8_t value) {
-	uint8_t res;
-
-	return res;
+/* sets a motor configuration parameter
+ * these parameters have limited r/w and should only by adjusted/read occasionally
+ * see manual for more detailed description and acceptable values for the parameters
+ * 0: device id
+ * 1: PWM
+ * 2: shutdown motors on error
+ * 3: serial timeout
+ * 4: motor m0 acceleration
+ * 5: motor m1 acceleration
+ * 6: motor m0 brake duration
+ * 7: motor m1 brake duration
+ * 8: motor m0 current limit/2
+ * 9: motor m1 current limit/2
+ * 10: motor m0 current-limit response
+ * 11: motor m1 current-limit response
+ * 
+ * return -1 for uart error
+ * return 0 success
+ * return 1 bad parameter number
+ * return 2 bad value for parameter
+ */
+int	settMotorConfigurationParameter(int parameter, int value) {
+	// variables
+	int res = -1;
+	int *rptr = &res;
+	int s1=-1, s2=-1, s3=-1, s4=-1, s5=-1;
+	
+	// send request set a parameter value
+	// last two bytes are format bytes meant to prevent errors
+	s1 = usart_putchar(USART2_BASE_ADDR, QIK_SET_CONFIGURATION_PARAMETER);
+	s2 = usart_putchar(USART2_BASE_ADDR, parameter);
+	s3 = usart_putchar(USART2_BASE_ADDR, value);
+	s4 = usart_putchar(USART2_BASE_ADDR, 0x55);
+	s5 = usart_putchar(USART2_BASE_ADDR, 0x2A);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS || s3 != USART_SUCCESS || s4 != USART_SUCCESS || s5 != USART_SUCCESS)
+		return -1; // error sending uart data
+	else {
+		success = USART_RX_EMPTY;
+		// motor controller sends back success or failure in setting the parameter to requested value
+		while(success == USART_RX_EMPTY) {
+			success = usart_read_char(USART2_BASE_ADDR, rptr);
+		}
+		if(success == USART_SUCCESS)
+			return res;
+		else
+			return -1;
+	}
 }
 
 void setM0Speed(int speed) {
