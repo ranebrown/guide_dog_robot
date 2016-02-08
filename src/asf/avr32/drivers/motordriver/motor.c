@@ -215,6 +215,9 @@ void setM0Speed(int speed) {
 		// TODO error handling
 }
 
+/* sets motor m1 speed
+ * speed values -127 to 127 (negative values are for reverse)
+ */
 void setM1Speed(int speed) {
 	int reverse = 0;
 	int cmd1 = 0, cmd2 = 0;
@@ -245,21 +248,63 @@ void setM1Speed(int speed) {
 		// TODO error handling
 }
 
+/* sets motor m0 and m1 speed
+ * speed values -127 to 127 (negative values are for reverse)
+ */
 void settMotorSpeeds(int m0Speed, int m1Speed) {
 	setM0Speed(m0Speed);
 	setM1Speed(m1Speed);
 }
 
-void setM0Brake(unsigned char brake) {
-
+/* sets brake for motor m0
+ * a value of 0 is no brake (free spin)
+ * a value of 127 is full brake
+ */
+void setM0Brake(int brake) {
+	// variables
+	int s1 = -1; s2 = -1;
+	
+	// set max brake values
+	if (brake > 127)
+		brake = 127;
+	if (brake < 0)
+		brake = 0;
+	
+	// send command
+	s1 = usart_putchar(USART2_BASE_ADDR, QIK_MOTOR_M0_BRAKE);
+	s2 = usart_putchar(USART2_BASE_ADDR, brake);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+		// TODO error handling
 }
 
-void setM1Brake(unsigned char brake) {
-
+/* sets brake for motor m1
+ * a value of 0 is no brake (free spin)
+ * a value of 127 is full brake
+ */
+void setM1Brake(int brake) {
+	// variables
+	int s1 = -1; s2 = -1;
+	
+	// set max brake values
+	if (brake > 127)
+		brake = 127;
+	if (brake < 0)
+		brake = 0;
+	
+	// send command
+	s1 = usart_putchar(USART2_BASE_ADDR, QIK_MOTOR_M1_BRAKE);
+	s2 = usart_putchar(USART2_BASE_ADDR, brake);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+		// TODO error handling
 }
 
-void settMotorBrakes(unsigned char m0Brake, unsigned char m1Brake) {
-
+/* sets brake for motor m0 and m1
+ * a value of 0 is no brake (free spin)
+ * a value of 127 is full brake
+ */
+void settMotorBrakes(int m0Brake, int m1Brake) {
+	setM0Brake(m0Brake);
+	setM1Brake(m1Brake);
 }
 
 unsigned char getM0Current(void) {
