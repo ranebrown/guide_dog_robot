@@ -57,7 +57,8 @@ void board_init(void)
 
 	// Initialize UART pins
 	//UART 2 is motor driver
-	gpio_enable_module_pin(AVR32_USART2_TXD_0_0_PIN, AVR32_USART2_TXD_0_0_FUNCTION);			//UART 2 TX
+	//gpio_enable_module_pin(AVR32_USART2_TXD_0_0_PIN, AVR32_USART2_TXD_0_0_FUNCTION);			//UART 2 TX
+	gpio_enable_module_pin(AVR32_USART2_TXD_0_1_PIN, AVR32_USART2_TXD_0_1_FUNCTION);
 	gpio_enable_module_pin(AVR32_USART2_RXD_0_0_PIN, AVR32_USART2_RXD_0_0_FUNCTION);			//UART 2 RX
 	uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
 	
@@ -67,8 +68,8 @@ void board_init(void)
 	uint32_t *USART3_BASE_ADDR = (uint32_t*)0xFFFF3C00;
 	
 	// set uart baud rate and options
-	usart_init_rs232(USART3_BASE_ADDR, &USART_OPTIONS, 17200000);
-	usart_init_rs232(USART2_BASE_ADDR, &USART_OPTIONS2, 17200000);
+	usart_init_rs232(USART3_BASE_ADDR, &USART_OPTIONS, 19750000);
+	usart_init_rs232(USART2_BASE_ADDR, &USART_OPTIONS2, 19750000);
 	
 	// initialize i2c pins
 	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);							//enable i2c clk
@@ -141,5 +142,6 @@ void gpioClock(void) {
 	scif_gc_enable(AVR32_SCIF_GCLK_DFLL0_SSG);
 	
 	/* Set the GCLOCK function to the GPIO pin */
-	gpio_enable_module_pin(AVR32_SCIF_GCLK_1_0_PIN, AVR32_SCIF_GCLK_1_0_FUNCTION);
+	/* update: this pin is now used for uart2 TX*/
+	//gpio_enable_module_pin(AVR32_SCIF_GCLK_1_0_PIN, AVR32_SCIF_GCLK_1_0_FUNCTION);
 }
