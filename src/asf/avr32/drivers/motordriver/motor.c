@@ -4,6 +4,9 @@
 
 uint8_t cmd[5]; // serial command buffer
 
+/* 
+ * initilize the motor controller
+ */
 void initMotor(uint32_t resetPin) {
 	// uart options set inside init.c
 	uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
@@ -22,6 +25,10 @@ void initMotor(uint32_t resetPin) {
 		
 }
 
+/*
+ * request the firmware version of motor controller 
+ * returns firmware version for success, -1 otherwise
+ */
 char getMotorFirmwareVersion(void) {
 	// variables
 	int version = 0;
@@ -46,11 +53,43 @@ char getMotorFirmwareVersion(void) {
 	}
 }
 
-uint8_t gettMotorErrors(void) {
-	uint8_t error;
-
-	return error;
+/*
+ * Request any errors from motor controller
+ * bit 0: motor 0 fault
+ * bit 1: motor 1 fault
+ * bit 2 motor 0 over current
+ * bit 3 motor 2 over current
+ * bit 4 serial hardware fault
+ * bit 5 CRC error
+ * bit 6 format error
+ * bit 7 timeout
+ * returns 8 bit error code for success, -1 for failure
+ *
+ */
+int gettMotorErrors(void) {
+	// variables
+	int err = 0;
+	int *eptr = &err;
+	int success = -1
+	
+	// send request for errors
+	success = usart_putchar(USART2_BASE_ADDR, QIK_GET_ERROR_BYTE);
+	if(success != USART_SUCCESS)
+		return -1; // error
+	else {
+		success = -1;
+		// wait for data from buffer
+		while(USART_RX_EMPTY) {
+			success = usart_read_char(USART2_BASE_ADDR, eptr);
+		}
+		// return errors
+		if(success == USART_SUCCESS)
+			return err;
+		else
+			return -1; // error
+	}
 }
+
 
 uint8_t gettMotorConfigurationParameter(uint8_t parameter) {
 	uint8_t res;
