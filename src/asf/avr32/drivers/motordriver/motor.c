@@ -16,13 +16,34 @@ void initMotor(uint32_t resetPin) {
 	gpio_configure_pin(resetPin, GPIO_DIR_INPUT);
 
 	// set qik to auto detect baud rate
-	usart_putchar(USART2_BASE_ADDR, 0xAA);
+	int success = usart_putchar(USART2_BASE_ADDR, 0xAA);
+	if(success != USART_SUCCESS)
+		// TODO error handling
+		
 }
 
 char getMotorFirmwareVersion(void) {
-	char version;
-
-	return version;
+	// variables
+	int version = 0;
+	int *vptr = &version;
+	int success = -1
+	
+	// send request for firmware version
+	success = usart_putchar(USART2_BASE_ADDR, QIK_GET_FIRMWARE_VERSION);
+	if(success != USART_SUCCESS)
+		return -1;
+	else {
+		success = -1;
+		// wait for data from buffer
+		while(USART_RX_EMPTY) {
+			success = usart_read_char(USART2_BASE_ADDR, vptr);
+		}
+		// if data was read return that data
+		if(success == USART_SUCCESS)
+			return (char)version;
+		else
+			return -1;
+	}
 }
 
 uint8_t gettMotorErrors(void) {
