@@ -101,7 +101,7 @@ int main (void)
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>16);
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>8);
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
-	*((volatile uint32_t*)(0xFFFF481C)) = 0x400;
+	//*((volatile uint32_t*)(0xFFFF481C)) = 0x400;
 	WRITE_MR(0x00070011);
 	
 	// initialize ADC
@@ -113,13 +113,42 @@ int main (void)
 	// main loop
 	while (1) {
 		int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
+		
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
 		usart_putchar(USART3_BASE_ADDR, uart_data);									//echo back data
 		//gpio_enable_gpio_pin(AVR32_PIN_PA17);
 		spi_write_FPGA(0, 0x80, (uart_data-48));									//write data to LED control reg
+		
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
+		
+		int left =  spi_read_FPGA(0, 0x00);
+		usart_write_line(USART3_BASE_ADDR, "Left Wheel: ");
+		send_binary_to_terminal(left);
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
+		
+		int right =  spi_read_FPGA(0, 0x01);
+		usart_write_line(USART3_BASE_ADDR, "Right Wheel: ");
+		send_binary_to_terminal(right);
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
+		
+		int adc1_1 =  spi_read_FPGA(0, 0x02);
+		usart_write_line(USART3_BASE_ADDR, "ADC1 channel 1: ");
+		send_binary_to_terminal(adc1_1);
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
+		
+		int adc1_2 =  spi_read_FPGA(0, 0x03);
+		usart_write_line(USART3_BASE_ADDR, "ADC1 channel 2: ");
+		send_binary_to_terminal(adc1_2);
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
+		
+		//char i2c_data[4] = {0x55,0x54,0x53,0x52};
+		//i2c_write(0x08,&i2c_data,4);
+		
 		//usart_putchar(USART2_BASE_ADDR, 0x0D);
 		int lidar = getLidar(I2C_BUFFERP);
-		//send_binary_to_terminal(lidar>>8);
-		//send_binary_to_terminal(lidar);		
+		send_binary_to_terminal(lidar>>8);
+		send_binary_to_terminal(lidar);	
+		usart_write_line(USART3_BASE_ADDR, "\r\n");	
 		//gpio_tgl_gpio_pin(AVR32_PIN_PA17);					
 	}
 }

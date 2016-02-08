@@ -190,8 +190,8 @@ int set_adc_sample_rate(int adc_num,int sample_rate_Hz){
 	int period = clk_rate/sample_rate_Hz;
 	int msb = (period & 0xFF00) >> 8;
 	int lsb = (period & 0xFF);
-	send_binary_to_terminal(msb);
-	send_binary_to_terminal(lsb);
+	//send_binary_to_terminal(msb);
+	//send_binary_to_terminal(lsb);
 	spi_write_FPGA(0, (0x81 + 2*adc_num - 1),msb);
 	spi_write_FPGA(0,(0x82 + 2*adc_num - 1),lsb);
 }
@@ -202,7 +202,7 @@ int set_adc_ce(int adc_num, int on,int *current_val){
 	} else if (on == 1){
 		*current_val &= ~adc_num;
 	}
-	send_binary_to_terminal(*current_val);
+	//send_binary_to_terminal(*current_val);
 	spi_write_FPGA(0,0x81,*current_val);
 }
 

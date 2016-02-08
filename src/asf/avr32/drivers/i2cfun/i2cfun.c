@@ -17,7 +17,7 @@ int i2c_set_speed (uint32_t speed,uint32_t pba_hz)
 		return 0;
 	}
 	// set clock waveform generator register
-	*(volatile uint32_t *)0xFFFF4404 = ((f_prescaled/2))
+	*((volatile uint32_t *)0xFFFF4804) = ((f_prescaled/2))
 	| ((f_prescaled - f_prescaled/2) << 8)
 	| (cwgr_exp << 28)
 	| (0     << 24)
@@ -26,37 +26,39 @@ int i2c_set_speed (uint32_t speed,uint32_t pba_hz)
 }
 
 void i2c_init(void){
-	i2c_set_speed(100000,17200000);
-	*(volatile uint32_t *)0xFFFF4424 = 0x0000ffff;					//disable interupts
-	*(volatile uint32_t *)0xFFFF4400 = 0x00000021;					//enable master interface
+	i2c_set_speed(100000,19750000);
+	*((volatile uint32_t *)(0xFFFF4824)) = 0x0000ffff;					//disable interupts
+	*((volatile uint32_t *)(0xFFFF4800)) = 0x00000021;					//enable master interface
 }
 
 int i2c_write(int addr,char * data,int numbytes){
+	while(!(*((volatile uint32_t*)(0xFFFF481C)) & 0x20));
 	int i;
-	*(volatile uint32_t *)0xFFFF440C = 0x0000E000 | ( (0x7F & addr) << 1 ) | ((0xFF & numbytes)<<16);		//load command reg
+	*((volatile uint32_t *)0xFFFF480C) = 0x0000E000 | ( (0x7F & addr) << 1 ) | ((0xFF & (numbytes))<<16);		//load command reg
 	for (i = 0; i < numbytes; i++){
-		while(!(*((volatile uint32_t*)(0xFFFF441C)) & 2)){									//wait for tx reg to empty
-			if (*((volatile uint32_t*)(0xFFFF441C)) & 0x00000300){							//if no ack exit
-				*((volatile uint32_t*)(0xFFFF442C)) = 0x00000300;
+		while(!(*((volatile uint32_t*)(0xFFFF481C)) & 2)){									//wait for tx reg to empty
+			if (*((volatile uint32_t*)(0xFFFF481C)) & 0x00000300){							//if no ack exit
+				*((volatile uint32_t*)(0xFFFF482C)) = 0x00000300;
 				return 0;
 			}
 		}
-		*(volatile uint32_t *)0xFFFF4418 = *(volatile char *)data++;											//load data reg
+		*((volatile uint32_t *)0xFFFF4818) = *((volatile char *)data++);											//load data reg
 	}
 	return 1;
 }
 
 int i2c_read(int addr,int numbytes,char *i2c_buffer){
+	while(!(*((volatile uint32_t*)(0xFFFF481C)) & 0x20));
 	int i;
-	*(volatile uint32_t *)0xFFFF440C = 0x0000E000 | ( (0x7F & addr) << 1 ) | ((0xFF & numbytes)<<16) | 1;
+	*((volatile uint32_t *)0xFFFF480C) = 0x0000E000 | ( (0x7F & addr) << 1 ) | ((0xFF & numbytes)<<16) | 1;
 	for (i = 0; i < numbytes; i++){
-		while(!(*((volatile uint32_t*)(0xFFFF441C)) & 1)){
-			if (*((volatile uint32_t*)(0xFFFF441C)) & 0x00000300){
-				*((volatile uint32_t*)(0xFFFF442C)) = 0x00000300;
+		while(!(*((volatile uint32_t*)(0xFFFF481C)) & 1)){
+			if (*((volatile uint32_t*)(0xFFFF481C)) & 0x00000300){
+				*((volatile uint32_t*)(0xFFFF482C)) = 0x00000300;
 				return 0;
 			}
 		}
-		*(volatile char *)i2c_buffer++ = *(volatile uint32_t *)0xFFFF4414;
+		*((volatile char *)i2c_buffer++) = *((volatile uint32_t *)0xFFFF4814);
 	}
 	return 1;
 }
@@ -69,8 +71,10 @@ int getLidar(char *i2c_buffer){
 	val = val*2;
 	i2c_write(0x62,&data2,1);
 	val = val*2;
-	i2c_read(0x62,2,i2c_buffer);
-	val = *i2c_buffer<<8 | *(i2c_buffer+1);
+	i2c_read(0x62,1,i2c_buffer);
+	val = *i2c_buffer<<8;
+	i2c_read(0x62,1,i2c_buffer);
+	val = val | *i2c_buffer;
 	//TODO: convert to feet/inches
 	return val;
 }
