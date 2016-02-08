@@ -2,8 +2,6 @@
 #include "gpio.h"
 #include "usart.h"
 
-uint8_t cmd[5]; // serial command buffer
-
 /* 
  * initilize the motor controller
  */
@@ -40,9 +38,9 @@ char getMotorFirmwareVersion(void) {
 	if(success != USART_SUCCESS)
 		return -1;
 	else {
-		success = -1;
+		success = USART_RX_EMPTY;
 		// wait for data from buffer
-		while(USART_RX_EMPTY) {
+		while(success == USART_RX_EMPTY) {
 			success = usart_read_char(USART2_BASE_ADDR, vptr);
 		}
 		// if data was read return that data
@@ -77,9 +75,9 @@ int gettMotorErrors(void) {
 	if(success != USART_SUCCESS)
 		return -1; // error
 	else {
-		success = -1;
+		success = USART_RX_EMPTY;
 		// wait for data from buffer
-		while(USART_RX_EMPTY) {
+		while(success == USART_RX_EMPTY) {
 			success = usart_read_char(USART2_BASE_ADDR, eptr);
 		}
 		// return errors
@@ -91,13 +89,34 @@ int gettMotorErrors(void) {
 }
 
 
-uint8_t gettMotorConfigurationParameter(uint8_t parameter) {
-	uint8_t res;
-
-	return res;
+int gettMotorConfigurationParameter(int parameter) {
+	// variables
+	int res = -1;
+	int *rptr = &res;
+	int success = -1;
+	
+	// send request to get the value of parameter
+	success = usart_putchar(USART2_BASE_ADDR, QIK_GET_CONFIGURATION_PARAMETER);
+	if(success != USART_SUCCESS)
+		return -1;
+	else
+		success = usart_putchar(USART2_BASE_ADDR, parameter);
+	if(success != USART_SUCCESS)
+		return -1;
+	else {
+		success = USART_RX_EMPTY;
+		// read parameter value from motor controller
+		while(success == USART_RX_EMPTY) {
+			success = usart_read_char(USART2_BASE_ADDR, rptr);
+		}
+		if(success == USART_SUCCESS)
+			return res;
+		else 
+			return -1;
+	}			
 }
 
-uint8_t	settMotorConfigurationParameter(uint8_t parameter, uint8_t value) {
+int	settMotorConfigurationParameter(uint8_t parameter, uint8_t value) {
 	uint8_t res;
 
 	return res;
