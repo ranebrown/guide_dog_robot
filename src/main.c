@@ -101,11 +101,10 @@ int main (void)
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>16);
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>8);
 	send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
-	//*((volatile uint32_t*)(0xFFFF481C)) = 0x400;
-	WRITE_MR(0x00070011);
+	WRITE_MR(0x00070011);															//set CS3 (TEMPORARY)
 	
 	// initialize ADC
-	set_adc_ce(3, 0,adc_ce_reg_pointer);															//set CS3 (TEMPORARY)
+	set_adc_ce(3, 0,adc_ce_reg_pointer);
 	set_adc_sample_rate(1,400);
 	set_adc_sample_rate(2,400);
 	set_adc_ce(3, 1,adc_ce_reg_pointer);

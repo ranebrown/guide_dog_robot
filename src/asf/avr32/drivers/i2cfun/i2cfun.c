@@ -71,10 +71,8 @@ int getLidar(char *i2c_buffer){
 	val = val*2;
 	i2c_write(0x62,&data2,1);
 	val = val*2;
-	i2c_read(0x62,1,i2c_buffer);
-	val = *i2c_buffer<<8;
-	i2c_read(0x62,1,i2c_buffer);
-	val = val | *i2c_buffer;
+	i2c_read(0x62,2,i2c_buffer);
+	val = *i2c_buffer<<8 | *(i2c_buffer+1);
 	//TODO: convert to feet/inches
 	return val;
 }

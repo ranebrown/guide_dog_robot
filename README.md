@@ -22,4 +22,9 @@ PCB programmed with AVR JTAGICE XPII
 * unit tests for functions
 * in getLidar(), convert to proper units
 * gpio.h includes avr32/io.h (this is missing)
+* external interrupts
+
+
+# UPDATES
+- getLidar() is working
 
