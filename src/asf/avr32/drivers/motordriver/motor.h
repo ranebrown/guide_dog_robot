@@ -61,16 +61,16 @@ void setM1Brake(int brake);
 
 void setMotorBrakes(int m0Brake, int m1Brake);
 
-unsigned char getM0Current(void);
+int getM0Current(void);
 
-unsigned char getM1Current(void);
+int getM1Current(void);
 
-unsigned int getM0CurrentMilliamps(void);
+int getM0CurrentMilliamps(void);
 
-unsigned int getM1CurrentMilliamps(void);
+int getM1CurrentMilliamps(void);
 
-unsigned char getM0Speed(void);
+int getM0Speed(void);
 
-unsigned char getM1Speed(void);
+int getM1Speed(void);
 
 #endif // MOTOR_H

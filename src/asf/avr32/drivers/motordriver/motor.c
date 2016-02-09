@@ -326,7 +326,7 @@ int getM0Current(void) {
 	// send command
 	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_MOTOR_M0_CURRENT);
 	if(s1 != USART_SUCCESS)
-		return -1
+		return -1;
 	else {
 		s1 = USART_RX_EMPTY;
 		while(s1 == USART_RX_EMPTY) {
@@ -353,7 +353,7 @@ int getM1Current(void) {
 	// send command
 	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_MOTOR_M1_CURRENT);
 	if(s1 != USART_SUCCESS)
-	return -1
+		return -1;
 	else {
 		s1 = USART_RX_EMPTY;
 		while(s1 == USART_RX_EMPTY) {
@@ -372,7 +372,7 @@ int getM1Current(void) {
  * returns -1 for uart error
  */
 int getM0CurrentMilliamps(void) {
-	return getM0Current(void) * 150;
+	return (getM0Current() * 150);
 }
 
 /*
@@ -380,19 +380,60 @@ int getM0CurrentMilliamps(void) {
  * returns -1 for uart error
  */
 int getM1CurrentMilliamps(void) {
-	return getM1Current(void) * 150;
+	return (getM1Current() * 150);
 }
 
-unsigned char getM0Speed(void) {
-	unsigned char speed;
-
-	return speed;
+/* returns the speed the qik is attempting to set motor m0 to
+ * returns -1 for error
+ * this is not the actual motor speed -> use encoder for the actual speed
+ */
+int getM0Speed(void) {
+	// variables
+	int s1 = -1;
+	int speed = -1;
+	int *sptr = &speed;
+	
+	// send command
+	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_MOTOR_M0_SPEED);
+	if(s1 != USART_SUCCESS)
+		return -1;
+	else {
+		s1 = USART_RX_EMPTY;
+		while(s1 == USART_RX_EMPTY) {
+			// get value back from motor controller
+			s1 = usart_read_char(USART2_BASE_ADDRESS, sptr);
+		}
+	}
+	if(s1 == USART_SUCCESS)
+		return speed;
+	else
+		return -1;
 }
 
-unsigned char getM1Speed(void) {
-	unsigned char speed;
-
-	return speed;
-
+/* returns the speed the qik is attempting to set motor m1 to
+ * returns -1 for error
+ * this is not the actual motor speed -> use encoder for the actual speed
+ */
+int getM1Speed(void) {
+	// variables
+	int s1 = -1;
+	int speed = -1;
+	int *sptr = &speed;
+	
+	// send command
+	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_MOTOR_M1_SPEED);
+	if(s1 != USART_SUCCESS)
+		return -1;
+	else {
+		s1 = USART_RX_EMPTY;
+		while(s1 == USART_RX_EMPTY) {
+			// get value back from motor controller
+			s1 = usart_read_char(USART2_BASE_ADDRESS, sptr);
+		}
+	}
+	if(s1 == USART_SUCCESS)
+		return speed;
+	else
+		return -1;
 }
 
