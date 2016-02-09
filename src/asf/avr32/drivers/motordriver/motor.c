@@ -2,12 +2,12 @@
 #include "gpio.h"
 #include "usart.h"
 
+uint32_t *USART2_BASE_ADDRESS = (uint32_t*)0xFFFF3800;
 /* 
  * initilize the motor controller
  */
 void initMotor(uint32_t resetPin) {
 	// uart options set inside init.c
-	uint32_t *USART2_BASE_ADDR = (uint32_t*)0xFFFF3800;
 
 	// reset qik
 	// pulling pin low resests qik (normally pulled high)
@@ -17,8 +17,8 @@ void initMotor(uint32_t resetPin) {
 	gpio_configure_pin(resetPin, GPIO_DIR_INPUT);
 
 	// set qik to auto detect baud rate
-	int success = usart_putchar(USART2_BASE_ADDR, 0xAA);
-	if(success != USART_SUCCESS)
+	int success = usart_putchar(USART2_BASE_ADDRESS, 0xAA);
+	if(success != USART_SUCCESS){}
 		// TODO error handling
 		
 }
@@ -31,17 +31,17 @@ char getMotorFirmwareVersion(void) {
 	// variables
 	int version = 0;
 	int *vptr = &version;
-	int success = -1
+	int success = -1;
 	
 	// send request for firmware version
-	success = usart_putchar(USART2_BASE_ADDR, QIK_GET_FIRMWARE_VERSION);
+	success = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_FIRMWARE_VERSION);
 	if(success != USART_SUCCESS)
 		return -1;
 	else {
 		success = USART_RX_EMPTY;
 		// wait for data from buffer
 		while(success == USART_RX_EMPTY) {
-			success = usart_read_char(USART2_BASE_ADDR, vptr);
+			success = usart_read_char(USART2_BASE_ADDRESS, vptr);
 		}
 		// if data was read return that data
 		if(success == USART_SUCCESS)
@@ -68,17 +68,17 @@ int gettMotorErrors(void) {
 	// variables
 	int err = 0;
 	int *eptr = &err;
-	int success = -1
+	int success = -1;
 	
 	// send request for errors
-	success = usart_putchar(USART2_BASE_ADDR, QIK_GET_ERROR_BYTE);
+	success = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_ERROR_BYTE);
 	if(success != USART_SUCCESS)
 		return -1; // error
 	else {
 		success = USART_RX_EMPTY;
 		// wait for data from buffer
 		while(success == USART_RX_EMPTY) {
-			success = usart_read_char(USART2_BASE_ADDR, eptr);
+			success = usart_read_char(USART2_BASE_ADDRESS, eptr);
 		}
 		// return errors
 		if(success == USART_SUCCESS)
@@ -114,18 +114,18 @@ int gettMotorConfigurationParameter(int parameter) {
 	int success = -1;
 	
 	// send request to get the value of parameter
-	success = usart_putchar(USART2_BASE_ADDR, QIK_GET_CONFIGURATION_PARAMETER);
+	success = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_CONFIGURATION_PARAMETER);
 	if(success != USART_SUCCESS)
 		return -1;
 	else
-		success = usart_putchar(USART2_BASE_ADDR, parameter);
+		success = usart_putchar(USART2_BASE_ADDRESS, parameter);
 	if(success != USART_SUCCESS)
 		return -1;
 	else {
 		success = USART_RX_EMPTY;
 		// read parameter value from motor controller
 		while(success == USART_RX_EMPTY) {
-			success = usart_read_char(USART2_BASE_ADDR, rptr);
+			success = usart_read_char(USART2_BASE_ADDRESS, rptr);
 		}
 		if(success == USART_SUCCESS)
 			return res;
@@ -159,21 +159,22 @@ int	settMotorConfigurationParameter(int parameter, int value) {
 	int res = -1;
 	int *rptr = &res;
 	int s1=-1, s2=-1, s3=-1, s4=-1, s5=-1;
+	int success;
 	
 	// send request set a parameter value
 	// last two bytes are format bytes meant to prevent errors
-	s1 = usart_putchar(USART2_BASE_ADDR, QIK_SET_CONFIGURATION_PARAMETER);
-	s2 = usart_putchar(USART2_BASE_ADDR, parameter);
-	s3 = usart_putchar(USART2_BASE_ADDR, value);
-	s4 = usart_putchar(USART2_BASE_ADDR, 0x55);
-	s5 = usart_putchar(USART2_BASE_ADDR, 0x2A);
+	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_SET_CONFIGURATION_PARAMETER);
+	s2 = usart_putchar(USART2_BASE_ADDRESS, parameter);
+	s3 = usart_putchar(USART2_BASE_ADDRESS, value);
+	s4 = usart_putchar(USART2_BASE_ADDRESS, 0x55);
+	s5 = usart_putchar(USART2_BASE_ADDRESS, 0x2A);
 	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS || s3 != USART_SUCCESS || s4 != USART_SUCCESS || s5 != USART_SUCCESS)
 		return -1; // error sending uart data
 	else {
 		success = USART_RX_EMPTY;
 		// motor controller sends back success or failure in setting the parameter to requested value
 		while(success == USART_RX_EMPTY) {
-			success = usart_read_char(USART2_BASE_ADDR, rptr);
+			success = usart_read_char(USART2_BASE_ADDRESS, rptr);
 		}
 		if(success == USART_SUCCESS)
 			return res;
@@ -188,7 +189,8 @@ int	settMotorConfigurationParameter(int parameter, int value) {
 void setM0Speed(int speed) {
 	int reverse = 0;
 	int cmd1 = 0, cmd2 = 0;
-	int s1 = -1; s2 = -1;
+	int s1 = -1; 
+	int s2 = -1;
 	
 	// check if the requested speed is for reverse
 	if(speed < 0) {
@@ -209,9 +211,9 @@ void setM0Speed(int speed) {
 		cmd1 = reverse ? QIK_MOTOR_M0_REVERSE : QIK_MOTOR_M0_FORWARD;
 		cmd2 = speed;
 	}
-	s1 = usart_putchar(USART2_BASE_ADDR, cmd1);
-	s2 = usart_putchar(USART2_BASE_ADDR, cmd2);
-	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+	s1 = usart_putchar(USART2_BASE_ADDRESS, cmd1);
+	s2 = usart_putchar(USART2_BASE_ADDRESS, cmd2);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS){}
 		// TODO error handling
 }
 
@@ -221,7 +223,8 @@ void setM0Speed(int speed) {
 void setM1Speed(int speed) {
 	int reverse = 0;
 	int cmd1 = 0, cmd2 = 0;
-	int s1 = -1; s2 = -1;
+	int s1 = -1; 
+	int s2 = -1;
 	
 	// check if the requested speed is for reverse
 	if(speed < 0) {
@@ -242,9 +245,9 @@ void setM1Speed(int speed) {
 		cmd1 = reverse ? QIK_MOTOR_M1_REVERSE : QIK_MOTOR_M1_FORWARD;
 		cmd2 = speed;
 	}
-	s1 = usart_putchar(USART2_BASE_ADDR, cmd1);
-	s2 = usart_putchar(USART2_BASE_ADDR, cmd2);
-	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+	s1 = usart_putchar(USART2_BASE_ADDRESS, cmd1);
+	s2 = usart_putchar(USART2_BASE_ADDRESS, cmd2);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS){}
 		// TODO error handling
 }
 
@@ -262,7 +265,8 @@ void settMotorSpeeds(int m0Speed, int m1Speed) {
  */
 void setM0Brake(int brake) {
 	// variables
-	int s1 = -1; s2 = -1;
+	int s1 = -1; 
+	int s2 = -1;
 	
 	// set max brake values
 	if (brake > 127)
@@ -271,9 +275,9 @@ void setM0Brake(int brake) {
 		brake = 0;
 	
 	// send command
-	s1 = usart_putchar(USART2_BASE_ADDR, QIK_MOTOR_M0_BRAKE);
-	s2 = usart_putchar(USART2_BASE_ADDR, brake);
-	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_MOTOR_M0_BRAKE);
+	s2 = usart_putchar(USART2_BASE_ADDRESS, brake);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS){}
 		// TODO error handling
 }
 
@@ -283,7 +287,8 @@ void setM0Brake(int brake) {
  */
 void setM1Brake(int brake) {
 	// variables
-	int s1 = -1; s2 = -1;
+	int s1 = -1; 
+	int s2 = -1;
 	
 	// set max brake values
 	if (brake > 127)
@@ -292,9 +297,9 @@ void setM1Brake(int brake) {
 		brake = 0;
 	
 	// send command
-	s1 = usart_putchar(USART2_BASE_ADDR, QIK_MOTOR_M1_BRAKE);
-	s2 = usart_putchar(USART2_BASE_ADDR, brake);
-	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS)
+	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_MOTOR_M1_BRAKE);
+	s2 = usart_putchar(USART2_BASE_ADDRESS, brake);
+	if(s1 != USART_SUCCESS || s2 != USART_SUCCESS){}
 		// TODO error handling
 }
 
