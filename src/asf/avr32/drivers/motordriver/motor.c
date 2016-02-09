@@ -312,30 +312,75 @@ void settMotorBrakes(int m0Brake, int m1Brake) {
 	setM1Brake(m1Brake);
 }
 
-unsigned char getM0Current(void) {
-	unsigned char current;
-
-	return current;
+/*
+ * returns an 8 bit value of the average motor m0 current of the last 5ms
+ * if uart error returns -1
+ * NOTE: actual current can vary by as much as 20%
+ */
+int getM0Current(void) {
+	// variables
+	int s1 = -1;
+	int current = -1;
+	int *cptr = &current;
+	
+	// send command
+	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_MOTOR_M0_CURRENT);
+	if(s1 != USART_SUCCESS)
+		return -1
+	else {
+		s1 = USART_RX_EMPTY;
+		while(s1 == USART_RX_EMPTY) {
+			// get value back from motor controller
+			s1 = usart_read_char(USART2_BASE_ADDRESS, cptr);
+		}
+	}
+	if(s1 == USART_SUCCESS)
+		return current;
+	else
+		return -1;
 }
 
-unsigned char getM1Current(void) {
-	unsigned char current;
-
-	return current;
+/*
+ * returns an 8 bit value of the average motor m1 current of the last 5ms
+ * NOTE: actual current can vary by as much as 20%
+ */
+int getM1Current(void) {
+	// variables
+	int s1 = -1;
+	int current = -1;
+	int *cptr = &current;
+	
+	// send command
+	s1 = usart_putchar(USART2_BASE_ADDRESS, QIK_GET_MOTOR_M1_CURRENT);
+	if(s1 != USART_SUCCESS)
+	return -1
+	else {
+		s1 = USART_RX_EMPTY;
+		while(s1 == USART_RX_EMPTY) {
+			// get value back from motor controller
+			s1 = usart_read_char(USART2_BASE_ADDRESS, cptr);
+		}
+	}
+	if(s1 == USART_SUCCESS)
+		return current;
+	else
+		return -1;
 }
 
-unsigned int getM0CurrentMilliamps(void) {
-	unsigned int current;
-
-	return current;
-
+/*
+ * returns an 8 bit value of current in mA for motor m0
+ * returns -1 for uart error
+ */
+int getM0CurrentMilliamps(void) {
+	return getM0Current(void) * 150;
 }
 
-unsigned int getM1CurrentMilliamps(void) {
-	unsigned int current;
-
-	return current;
-
+/*
+ * returns an 8 bit value of current in mA for motor m1
+ * returns -1 for uart error
+ */
+int getM1CurrentMilliamps(void) {
+	return getM1Current(void) * 150;
 }
 
 unsigned char getM0Speed(void) {
