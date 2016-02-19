@@ -34,5 +34,6 @@ void send_binary_to_terminal(unsigned int data);
 void send_hex_to_terminal(unsigned int data);
 
 
+void setPWM(float duty);
 
 #endif

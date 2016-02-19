@@ -155,6 +155,7 @@ void eic_clear_interrupt_line(volatile avr32_eic_t *eic, uint32_t line_number)
 	eic->icr = 1 << line_number;
 	eic->isr;
 	cpu_irq_restore(flags);
+	//int x = (eic->isr & (1 << line_number));
 }
 
 bool eic_is_interrupt_line_pending(volatile avr32_eic_t *eic, uint32_t line_number)

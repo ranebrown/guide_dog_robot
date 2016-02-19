@@ -6,6 +6,9 @@
 #ifndef USER_BOARD_H
 #define USER_BOARD_H
 
+#include "eic.h"
+#include "uc3l0256.h"
+
 // definitions
 #define WRITE_MR(val) ((*(volatile uint32_t *)0xFFFF4004) = (val))
 #define WRITE_CR(val) ((*(volatile uint32_t *)0xFFFF4000) = (val))
@@ -34,5 +37,15 @@ void initClock(void);
 * return: none
 */
 void gpioClock(void);
+
+/*
+ * initializes interrupt
+ * param eic_options = structure containing interrupt settings
+ * return 0 success, 1 else
+ */
+void initInterrupt(void);
+
+// interrupt handler
+static void eic_int_handler1(void);
 
 #endif // USER_BOARD_H

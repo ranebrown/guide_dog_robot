@@ -234,3 +234,11 @@ void send_hex_to_terminal(unsigned int data){
 		usart_putchar((uint32_t*)0xFFFF3C00, (0x41-0xA+data0));
 	}
 }
+
+void setPWM(float duty){
+	unsigned int count = (unsigned int)(1953.125*duty/100.0);
+	spi_write_FPGA(0, 0x86, count);
+	spi_write_FPGA(0, 0x87, count);
+	send_binary_to_terminal(spi_read_FPGA(0, 7));
+	send_binary_to_terminal(spi_read_FPGA(0, 8));
+}

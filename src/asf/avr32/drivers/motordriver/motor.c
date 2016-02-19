@@ -254,7 +254,7 @@ void setM1Speed(int speed) {
 /* sets motor m0 and m1 speed
  * speed values -127 to 127 (negative values are for reverse)
  */
-void settMotorSpeeds(int m0Speed, int m1Speed) {
+void setMotorSpeeds(int m0Speed, int m1Speed) {
 	setM0Speed(m0Speed);
 	setM1Speed(m1Speed);
 }
@@ -435,5 +435,27 @@ int getM1Speed(void) {
 		return speed;
 	else
 		return -1;
+}
+
+int IIR_Motor_Controller(char xin, char *x, char *y){
+	//motor constants
+	float Kp;
+	float Ki;
+	float Kd;
+	float Ts = 1/95.367;
+	float K1 = Kp+Ki*Ts/2+2*Kd/Ts;
+	float K2 = Ki*Ts-4*Kd/Ts;
+	float K3 = -Kp+Ki*Ts/2+2*Kd/Ts;
+	
+	//difference equation for IIR filter
+	//float y = -y[1] + K1*xin + K2*x[0] + K3*x[1];
+	
+	//update old values
+	//*x[1] = *x[0];
+	//*x[0] = xin;
+	//*y[1] = y[0];
+	//*y[0] = y;
+	
+	return (int)y;
 }
 
