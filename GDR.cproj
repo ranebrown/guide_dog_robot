@@ -313,10 +313,6 @@
     <GenerateEepFile>True</GenerateEepFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ServoFun.h">
-      <SubType>compile</SubType>
-      <Link>ServoFun.h</Link>
-    </Compile>
     <Compile Include="src\asf\avr32\drivers\eic\eic.c">
       <SubType>compile</SubType>
     </Compile>

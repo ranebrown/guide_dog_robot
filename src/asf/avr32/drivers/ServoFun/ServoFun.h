@@ -14,6 +14,44 @@
 long map(long x, long in_min, long in_max, long out_min, long out_max); //maps angle input to servo pulse width
 
 void write(int angle);				// if value is < 200 its treated as an angle, otherwise as pulse width in microseconds
-void writeMicroseconds(int angle); // Write pulse width in microseconds 
+void writeMicroseconds(int angle); // Write pulse width in microseconds
+
+/*
+ * moves the servo to its predefined home location
+ * home location - right side at 45 deg angle
+ */
+void sweepHome();
+
+/*
+ * sweeps lidar from home position to left 
+ * sweep moves through 90 deg
+ * stops at left side
+ */
+void sweepLeft();
+
+/*
+ * sweeps lidar from far left position to home position
+ * sweep moves through 90 deg
+ * stops at home position
+ */
+void sweepRight();
+
+/*
+ * sweeps from home position to left and then back home
+ * sweep moves through 180 deg
+ */
+void sweepFull();
+
+/*
+ * sweeps left x degrees
+ * max left movement is 90 deg from home location
+ */
+void sweepLeftXDeg(float x);
+
+/*
+ * sweeps right x degrees
+ * max right movement is home position (45 deg)
+ */
+void sweepRightXDeg(float x);
 
 #endif
