@@ -42,6 +42,7 @@ extern uint32_t *PWMA_base;
 /* i2c buffer */
 char I2C_BUFFER[32];
 char *I2C_BUFFERP = (char*)(&I2C_BUFFER);
+int state = 0;			// duty cycle
 
 
 int main (void)
@@ -150,8 +151,7 @@ int main (void)
 	*/
 	int angle[91];          // Angle Array
 	int pos = 0;			// servo Angle
-	float duty = 2.5;			// duty cycle
-	setPWM(duty);
+	setPWM(4.725);
 	
 	
 	//setPWM(5);
@@ -231,18 +231,19 @@ int main (void)
 		//	pwma_set_channels_value(&AVR32_PWMA,(1<<AVR32_PWMA_4_PIN),);
 		//}
 
+			if(state == 0){
+				usart_write_line(USART3_BASE_ADDR, "2.5\r\n");
+				setPWM(4.725);
+				state = 1;
+			} else if (state == 1){
+				usart_write_line(USART3_BASE_ADDR, "11.4\r\n");
+				setPWM(9.175);
+				state = 0;
+			}			
+		
+		usart_write_line(USART3_BASE_ADDR, "loop back\r\n");
+		
 
-			if(2.4<=duty<=11.5){
-				if(duty==2.5){
-					duty=11.4;
-					setPWM(duty);
-					
-				}
-				if (duty==11.4){
-					duty=2.5;
-					setPWM(duty);
-				}
-			}
 
 		//usart_write_line(USART3_BASE_ADDR, "\r\n");
 		//usart_putchar(USART3_BASE_ADDR, uart_data);									//echo back data
