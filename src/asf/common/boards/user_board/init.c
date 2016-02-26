@@ -285,20 +285,20 @@ static void eic_int_handler1(void)
 	
 	setMotorSpeeds((signed char)yout,(signed char)(-yout2));
 	
-	if (eic_is_interrupt_line_pending(&AVR32_EIC, 2)){
-		//send_binary_to_terminal((char)enc_speed);
-		//send_binary_to_terminal((signed char)xin);
-		//send_binary_to_terminal((signed char)yout);
-		send_binary_to_terminal(adc2_2);
-		usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
-	}		
-	else{
-		//send_binary_to_terminal((char)enc_speed);
-		//send_binary_to_terminal((signed char)xin);
-		//send_binary_to_terminal((signed char)yout);
-		send_binary_to_terminal(adc2_2);
-		usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
-	}		
+	//if (eic_is_interrupt_line_pending(&AVR32_EIC, 2)){
+		////send_binary_to_terminal((char)enc_speed);
+		////send_binary_to_terminal((signed char)xin);
+		////send_binary_to_terminal((signed char)yout);
+		//send_binary_to_terminal(adc2_2);
+		//usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
+	//}		
+	//else{
+		////send_binary_to_terminal((char)enc_speed);
+		////send_binary_to_terminal((signed char)xin);
+		////send_binary_to_terminal((signed char)yout);
+		//send_binary_to_terminal(adc2_2);
+		//usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
+	//}		
 	return;
 }
 

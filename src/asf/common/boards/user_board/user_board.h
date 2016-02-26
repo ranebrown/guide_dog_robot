@@ -8,6 +8,7 @@
 
 #include "eic.h"
 #include "uc3l0256.h"
+#include <stdint.h>
 
 // definitions
 #define WRITE_MR(val) ((*(volatile uint32_t *)0xFFFF4004) = (val))

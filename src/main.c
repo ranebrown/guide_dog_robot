@@ -121,23 +121,17 @@ int main (void)
 	int d = 0;
 	
 	initInterrupt();
-	Disable_global_interrupt();
 	
 	int angle[91];          // Angle Array
 	int pos = 0;			// servo Angle
-	
-	char nunchuckBuff[6] = {0};
-	char c = 0, z = 0;
-	char *zP  = &z;
-	char *cP = &c;
-	
-	char joy_xaxis = nunchuckBuff[0];
-	
-	// nunchuck handshake
-	char setup[2] = {0x40,0x00};
-	i2c_write(0x52,&setup,2);
 	setPWM(4.725);
 	for(d=0;d<3000000;d++);
+	
+	// nunchuck initialization
+	char nunchuckBuff[6] = {0};
+	uint8_t c = 0, z = 0;		// buttons
+	uint8_t xJoy = 0, yJoy=0;	// joystick
+	initNunchuck();
 	
 	// main loop
 	while (1) {
@@ -205,13 +199,23 @@ int main (void)
 			send_binary_to_terminal((int)(*Kp_p));
 			usart_write_line(USART3_BASE_ADDR, "\r\n");
 		}else if (uart_data == '9'){
-			getNunchuckData(I2C_BUFFERP,zP,cP);
-			
-			//usart_putchar(USART3_BASE_ADDR,*zP);
-			send_binary_to_terminal(z);
+			// get data
+			getNunchuckData(nunchuckBuff);
+			// decode button data
+			getNunchuckButtons(nunchuckBuff, &z, &c);
+			// get joystick data
+			getNunchuckJoy(nunchuckBuff, &xJoy, &yJoy);
+			// print results to terminal
+			//usart_write_line(USART3_BASE_ADDR, "z button:\t");
+			//send_binary_to_terminal(z);
+			//usart_write_line(USART3_BASE_ADDR, "\t");
+			//usart_write_line(USART3_BASE_ADDR, "c button:\t");
+			//send_binary_to_terminal(c);
+			//usart_write_line(USART3_BASE_ADDR, "\t");
+			send_binary_to_terminal(xJoy);
+			//usart_write_line(USART3_BASE_ADDR, "\t");
+			//send_binary_to_terminal(yJoy);
 			usart_write_line(USART3_BASE_ADDR, "\r\n");
-			usart_write_line(USART3_BASE_ADDR, "\r\n");
-		
 		}
 		
 		
