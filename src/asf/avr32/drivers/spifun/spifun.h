@@ -57,4 +57,7 @@ extern unsigned int spi_read_flash(int addr32);
 /************************************************************************/
 extern int spi_read_status(void);
 
+
+extern unsigned int spi_read_flash4(int addr32);
+
 #endif

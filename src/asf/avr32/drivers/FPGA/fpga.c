@@ -4,6 +4,7 @@
 //returns the length of the file i - 4 -5
 unsigned int program_flash(void){
 	
+	usart_write_line((uint32_t*)0xFFFF3C00, "Upload file, type 'xdonex' when file is done transferring\r\n");
 	//erase the whole chip
 	spi_chip_erase();
 	
@@ -99,10 +100,7 @@ int configure_fpga(unsigned int file_length){
 	
 	// Configuration Reset
 	gpio_clr_gpio_pin(AVR32_PIN_PA11);											//de-assert program_b to reset device
-	//gpio_tgl_gpio_pin(AVR32_PIN_PA20);											//used as a delay
-
 	gpio_set_gpio_pin(AVR32_PIN_PA11);											//assert program_b to start configuration process
-	
 	
 	// Wait for Device Initialization
 	while(gpio_get_pin_value(AVR32_PIN_PA22) == 0);							// wait until init_b is asserted and then send bit stream
@@ -111,17 +109,14 @@ int configure_fpga(unsigned int file_length){
 	int addr, data8;
 	gpio_clr_gpio_pin(AVR32_PIN_PB05);											//de-assert CCLK
 	for (i = 0; i < file_length; i++) {
-		//usart_putchar((uint32_t*)0xFFFF3C00, 'f');
 		addr = config_file_start_addr + i;
 		data8 = spi_read_flash(addr);											//read next byte, (clock is low, reading acts as a delay)
 		for (j = 7; j >= 0; --j){
 			uint32_t bitval = ((data8 >> j) & 1);
 			if (bitval){
 				gpio_set_gpio_pin(AVR32_PIN_PA05);								//if bit is 1 set DIN to 1
-				//usart_putchar((uint32_t*)0xFFFF3C00, '1');
 			} else {
 				gpio_clr_gpio_pin(AVR32_PIN_PA05);								//if bit is 0 set DIN to 0
-				//usart_putchar((uint32_t*)0xFFFF3C00, '0');
 			}
 			gpio_set_gpio_pin(AVR32_PIN_PB05);									//assert CCLK
 			gpio_clr_gpio_pin(AVR32_PIN_PB05);									//de-assert CCLK
@@ -238,4 +233,61 @@ void send_hex_to_terminal(unsigned int data){
 void setPWM(float duty){
 	unsigned int count = (unsigned int)(1953.125*duty/100.0);
 	spi_write_FPGA(0, 0x86, count);
+}
+
+int configure_fpga2(unsigned int file_length){
+	//CONFIGURATION CODE
+	int i,j,k;
+	int delay_len = 1;
+	
+	uint32_t config_file_start_addr = 4;
+	
+	// Configuration Reset
+	gpio_clr_gpio_pin(AVR32_PIN_PA11);											//de-assert program_b to reset device
+	gpio_set_gpio_pin(AVR32_PIN_PA11);											//assert program_b to start configuration process
+	
+	// Wait for Device Initialization
+	while(gpio_get_pin_value(AVR32_PIN_PA22) == 0);							// wait until init_b is asserted and then send bit stream
+
+	// Configuration (Bitstream) Load
+	int addr, data8;
+	gpio_clr_gpio_pin(AVR32_PIN_PB05);											//de-assert CCLK
+	for (i = 0; i < file_length/4; i++) {
+		addr = config_file_start_addr + i*4;
+		data8 = spi_read_flash4(addr);											//read next byte, (clock is low, reading acts as a delay)
+		for (k = 3; k >= 0; --k){
+			for (j = 7; j >= 0; --j){
+				uint32_t bitval = ((data8 >> (j+k*8)) & 1);
+				if (bitval){
+					//gpio_set_gpio_pin(AVR32_PIN_PA05);								//if bit is 1 set DIN to 1
+					*((volatile uint32_t*)(0xFFFF2C54)) = 0x20;
+				} else {
+					//gpio_clr_gpio_pin(AVR32_PIN_PA05);								//if bit is 0 set DIN to 0
+					*((volatile uint32_t*)(0xFFFF2C58)) = 0x20;
+				}
+				*((volatile uint32_t*)(0xFFFF2E54)) = 0x20;
+				*((volatile uint32_t*)(0xFFFF2E58)) = 0x20;
+				//gpio_set_gpio_pin(AVR32_PIN_PB05);									//assert CCLK
+				//gpio_clr_gpio_pin(AVR32_PIN_PB05);									//de-assert CCLK
+			}
+		}		
+	}
+	
+	// Check INIT_B
+	if (gpio_get_pin_value(AVR32_PIN_PA22) == 0) {
+		usart_write_line((uint32_t*)0xFFFF3C00, "ERROR CONFIG 1!\r\n");
+		return 1;
+	}
+	// Wait for DONE to assert
+	int timeout = 0xFF;
+	while(gpio_get_pin_value(AVR32_PIN_PB10) == 0){
+		timeout--;
+		if (timeout == 0){
+			usart_write_line((uint32_t*)0xFFFF3C00, "ERROR CONFIG 2!\r\n");
+			break;
+		}
+	}
+	// Compensate for Special Startup Conditions
+	for (i = 0; i < delay_len; i++);
+	return 0;
 }

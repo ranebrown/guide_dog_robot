@@ -39,11 +39,11 @@ double scaler = 2000;
 double *scaler_p = (double*)(&scaler);
 
 //right speed
-double refSpeed = 1;
+double refSpeed = 0;
 double *refSpeed_p = (int*)&refSpeed;
 
 //left speed
-double refSpeed2 = 1;
+double refSpeed2 = 0;
 double *refSpeed_p2 = (int*)&refSpeed2;
 
 // uart config parameters
@@ -92,7 +92,8 @@ void board_init(void)
 	
 	// set values for spi registers
 	uint32_t *SPI_BASE = (volatile uint32_t*)0xFFFF4000;
-	WRITE_MR(0x000E0011);
+	WRITE_MR(0x000E0051);
+	//WRITE_MR(0x000E0011);
 	WRITE_CS0(0x00000502);
 	WRITE_CS3(0x00000502);
 	WRITE_CR(0x00000001);
@@ -260,19 +261,42 @@ static void eic_int_handler1(void)
 	*(yp2+1) = *yp2;
 	*yp2 = yout2;
 	
+	int adc2_2 =  (spi_read_FPGA(0, 0x05)) & 0xFF;
+	if(adc2_2 <= 50){
+		usart_write_line((uint32_t*)0xFFFF3C00, "Tension Sensed\r\n");
+		*refSpeed_p = 0;
+		*refSpeed_p2 = 0;
+		yout = 0;
+		yout2 = 0;
+		setMotorSpeeds(0,0);
+		*(xp+1) = 0;
+		*xp = 0;
+		*(yp+1) = 0;
+		*yp = 0;
+		*(xp2+1) = 0;
+		*xp2 = 0;
+		*(yp2+1) = 0;
+		*yp2 = 0;
+	}
+	//usart_write_line((uint32_t*)0xFFFF3C00, "ADC2 channel 2: ");
+	//send_binary_to_terminal(adc2_2);
+	//usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
+	
 	
 	setMotorSpeeds((signed char)yout,(signed char)(-yout2));
 	
 	if (eic_is_interrupt_line_pending(&AVR32_EIC, 2)){
-		send_binary_to_terminal((char)enc_speed);
-		send_binary_to_terminal((signed char)xin);
-		send_binary_to_terminal((signed char)yout);
+		//send_binary_to_terminal((char)enc_speed);
+		//send_binary_to_terminal((signed char)xin);
+		//send_binary_to_terminal((signed char)yout);
+		send_binary_to_terminal(adc2_2);
 		usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
 	}		
 	else{
-		send_binary_to_terminal((char)enc_speed);
-		send_binary_to_terminal((signed char)xin);
-		send_binary_to_terminal((signed char)yout);
+		//send_binary_to_terminal((char)enc_speed);
+		//send_binary_to_terminal((signed char)xin);
+		//send_binary_to_terminal((signed char)yout);
+		send_binary_to_terminal(adc2_2);
 		usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
 	}		
 	return;

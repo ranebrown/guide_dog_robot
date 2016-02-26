@@ -112,6 +112,36 @@ unsigned int spi_read_flash(int addr32){
 	return (rx_data);
 }
 
+unsigned int spi_read_flash4(int addr32){
+	char addr2 = (char)((addr32 >> 16) & 0xFF);
+	char addr1 = (char)((addr32 >> 8) & 0xFF);
+	char addr0 = (char)((addr32 >> 0) & 0xFF);
+	char read_sequence[8] = {(char)0x03,addr2,addr1,addr0,(char)0xFF,(char)0xFF,(char)0xFF,(char)0xFF};
+	int i,dummy;
+	int d4,d3,d2,d1,d0;
+	for (i = 0; i < 8; i++){
+		*(volatile uint32_t*)0xFFFF400C = (read_sequence[i]);	//send data to TX reg
+		if (i >=5){
+			while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_RDRF_MASK) != AVR32_SPI_SR_RDRF_MASK );
+			if (i == 7){
+				while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_TXEMPTY_MASK) != AVR32_SPI_SR_TXEMPTY_MASK );
+				d3 = *((volatile uint32_t*)(0xFFFF4008))&0xFF;
+				d2 = *((volatile uint32_t*)(0xFFFF4008))&0xFF;
+				d1 = *((volatile uint32_t*)(0xFFFF4008))&0xFF;
+				d0 = *((volatile uint32_t*)(0xFFFF4008))&0xFF;
+			}
+		} else{
+			while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_RDRF_MASK) != AVR32_SPI_SR_RDRF_MASK ); //wait for rx buffer to be full
+			dummy = *((volatile uint16_t*)(0xFFFF4008));
+		}
+	}
+	spi_put((uint32_t*)0xFFFF4000, 0x00);
+	dummy = *((volatile uint16_t*)(0xFFFF4008));
+	int rx_data = d3<<24 | d2<<16 | d1<<8 | d0;
+	return (rx_data);
+}
+
+
 int spi_read_status(void){
 	*(volatile uint32_t*)0xFFFF400C = (0x05);															//send data to TX reg (op code)
 	while ( (*((volatile uint32_t*)(0xFFFF4010)) & AVR32_SPI_SR_RDRF_MASK) != AVR32_SPI_SR_RDRF_MASK ); //wait for rx buffer to be full

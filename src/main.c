@@ -19,6 +19,7 @@
 #include "pwma.h"
 #include "genclk.h"
 #include "sysclk.h"
+#include "nunchuck.h"
 
 
 //GLOBALS
@@ -74,24 +75,21 @@ int main (void)
 	
 	
 	// configure FPGA
-	//unsigned int file_length = program_flash();
+	WRITE_MR(0x000E0011);
+	//unsigned int file_length = program_flash(); //comment this in to upload bin file
+	WRITE_MR(0x000E0051);
 	//echo_back_flash_data(file_length);
+	
 	usart_write_line(USART3_BASE_ADDR, "reading file length from flash...\r\n");
-	uint32_t file_length00 = 0;
-	uint32_t file_length3,file_length2,file_length1,file_length0;
-	file_length3 = (uint32_t)spi_read_flash(0) & 0x000000FF;						//program_flash();
-	send_binary_to_terminal(file_length3);
-	file_length2 = (uint32_t)spi_read_flash(1) & 0x000000FF;
-	send_binary_to_terminal(file_length2);
-	file_length1 = (uint32_t)spi_read_flash(2) & 0x000000FF;
-	send_binary_to_terminal(file_length1);
-	file_length0 = (uint32_t)spi_read_flash(3) & 0x000000FF;
-	send_binary_to_terminal(file_length0);
-	file_length00 = file_length3<<24 | file_length2<<16 | file_length1<<8 | file_length0<<0 | 0;
-	usart_putchar(USART3_BASE_ADDR, 0x0D);
-	usart_putchar(USART3_BASE_ADDR, 0x0A);
+	int fl = spi_read_flash4(0); 
+	send_binary_to_terminal(fl>>24);
+	send_binary_to_terminal(fl>>16); 
+	send_binary_to_terminal(fl>>8); 
+	send_binary_to_terminal(fl);
+	usart_write_line(USART3_BASE_ADDR, "\r\n");
+	
 	usart_write_line(USART3_BASE_ADDR, "Configuring FPGA...\r\n");
-	int is_not_configured = configure_fpga(file_length00);
+	int is_not_configured = configure_fpga2(fl);
 	if (is_not_configured == 1){
 		usart_write_line(USART3_BASE_ADDR, "Configuration Failed\r\n");
 	} else {
@@ -102,79 +100,66 @@ int main (void)
 	gpio_enable_gpio_pin(AVR32_PIN_PA17);
 	gpio_enable_pin_pull_up(AVR32_PIN_PA17);
 	gpio_enable_pin_pull_up(AVR32_PIN_PB04);
-	//gpio_enable_module_pin(AVR32_TWIMS0_TWD_0_2_PIN, 6);
-	//gpio_enable_module_pin(AVR32_TWIMS0_TWCK_0_2_PIN, AVR32_TWIMS0_TWCK_0_2_FUNCTION);
-	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);			//enable i2c clk
-	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);
-	// reading registers for debugging
-	//send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>16);
-	//send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>8);
-	//send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
+	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);						//enable i2c clk
+	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION); //enable data
 	i2c_init();
-	//send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>16);
-	//send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C))>>8);
-	//send_binary_to_terminal(*((volatile uint32_t*)(0xFFFF481C)));
+	
 	WRITE_MR(0x00070011);															//set CS3 (TEMPORARY)
 	
 	// initialize ADC
-	set_adc_ce(3, 0,adc_ce_reg_pointer);
-	set_adc_sample_rate(1,400);
-	set_adc_sample_rate(2,400);
-	set_adc_ce(3, 1,adc_ce_reg_pointer);
+	set_adc_ce(2, 0,adc_ce_reg_pointer);
+	//set_adc_sample_rate(1,50);
+	set_adc_sample_rate(2,40000);
+	set_adc_ce(2, 1,adc_ce_reg_pointer);
 	
-	/*
-	char firm = getMotorFirmwareVersion();
-	usart_write_line(USART3_BASE_ADDR, "\r\n");
-	usart_write_line(USART3_BASE_ADDR, "Motor firmware version: ");
-	send_binary_to_terminal(firm);
-	usart_write_line(USART3_BASE_ADDR, "\r\n");
-	*/
 	
-	//initInterrupt();
+	//char firm = getMotorFirmwareVersion();
+	//usart_write_line(USART3_BASE_ADDR, "\r\n");
+	//usart_write_line(USART3_BASE_ADDR, "Motor firmware version: ");
+	//send_binary_to_terminal(firm);
+	//usart_write_line(USART3_BASE_ADDR, "\r\n");
+	int d = 0;
 	
-	//SERvo stuff
-	/**
-	 * Start generic clock 3 for the PWM module running at half the clock
-	 * speed of the CPU clock.
-	 */
-	/*
-	struct genclk_config gcfg;
-	genclk_config_defaults(&gcfg, AVR32_PM_GCLK_GCLK3 );
-	genclk_config_set_source(&gcfg, GENCLK_SRC_CLK_1K);
-	genclk_config_set_divider(&gcfg, 256);
-	genclk_enable(&gcfg,AVR32_PM_GCLK_GCLK3 );
-
+	initInterrupt();
+	Disable_global_interrupt();
 	
-	pwma_config_and_enable(&AVR32_PWMA,(1 << AVR32_PWMA_4_PIN), 255, 0);	//configure PWM channel with a top of 255 and a starting duty cycle of 0
-	gpio_enable_module_pin(AVR32_PWMA_4_PIN ,AVR32_PWMA_4_FUNCTION); //enable servo PWM pin
-	//pwma_set_channels_value(&AVR32_PWMA,(1<<AVR32_PWMA_4_PIN),128);
-	*/
 	int angle[91];          // Angle Array
 	int pos = 0;			// servo Angle
+	
+	char nunchuckBuff[6] = {0};
+	char c = 0, z = 0;
+	char *zP  = &z;
+	char *cP = &c;
+	
+	char joy_xaxis = nunchuckBuff[0];
+	
+	// nunchuck handshake
+	char setup[2] = {0x40,0x00};
+	i2c_write(0x52,&setup,2);
 	setPWM(4.725);
-	
-	
-	//setPWM(5);
+	for(d=0;d<3000000;d++);
 	
 	// main loop
 	while (1) {
-
-		
-		/*
-		int uart_data2;
-		uart_data2 = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
-		usart_putchar(USART3_BASE_ADDR,uart_data2);
-		if(uart_data2=='c'){
-			duty+= .1;.
-			//pwma_set_channels_value(&AVR32_PWMA,(1<<AVR32_PWMA_4_PIN),duty);
-			setPWM(duty);
+		/*for(d=0;d<3000;d++);
+		getNunchuckData(I2C_BUFFERP,zP,cP);
+		for(d=0;d<3000;d++);
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
+		send_binary_to_terminal(z);
+		send_binary_to_terminal(c);
+		usart_write_line(USART3_BASE_ADDR, "\r\n");
+		if(z == 1){
+			usart_write_line(USART3_BASE_ADDR, "z = 1\r\n");
+			*refSpeed_p = 1.2;
+			*refSpeed_p2 = 1.2;
 		}
-	
-		*/
-				
+		if(c==1){
+			*refSpeed_p = 0;
+			*refSpeed_p2 = 0;			
+		}*/
+		
 		int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
 		spi_write_FPGA(0, 0x80, (uart_data-48));
-		
 		
 		if (uart_data == 'w'){
 			*refSpeed_p += .1;
@@ -191,8 +176,8 @@ int main (void)
 			usart_write_line(USART3_BASE_ADDR, "Motor off\r\n");
 			setMotorSpeeds(0,0);
 		} else if (uart_data == '1'){
-			*refSpeed_p = 0;
-			*refSpeed_p2 = 0;
+			*refSpeed_p = 1.5;
+			*refSpeed_p2 = 1.5;
 			Enable_global_interrupt();
 			usart_write_line(USART3_BASE_ADDR, "Motor on\r\n");
 		} else if (uart_data == 'p'){
@@ -219,7 +204,16 @@ int main (void)
 			send_binary_to_terminal((int)(*Kp_p)>>8);
 			send_binary_to_terminal((int)(*Kp_p));
 			usart_write_line(USART3_BASE_ADDR, "\r\n");
-		}			
+		}else if (uart_data == '9'){
+			getNunchuckData(I2C_BUFFERP,zP,cP);
+			
+			//usart_putchar(USART3_BASE_ADDR,*zP);
+			send_binary_to_terminal(z);
+			usart_write_line(USART3_BASE_ADDR, "\r\n");
+			usart_write_line(USART3_BASE_ADDR, "\r\n");
+		
+		}
+		
 		
 
 		// Scan 90 degrees and store distance and angle readings
@@ -231,17 +225,13 @@ int main (void)
 		//	pwma_set_channels_value(&AVR32_PWMA,(1<<AVR32_PWMA_4_PIN),);
 		//}
 
-			if(state == 0){
-				usart_write_line(USART3_BASE_ADDR, "2.5\r\n");
-				setPWM(4.725);
-				state = 1;
-			} else if (state == 1){
-				usart_write_line(USART3_BASE_ADDR, "11.4\r\n");
-				setPWM(9.175);
-				state = 0;
-			}			
-		
-		usart_write_line(USART3_BASE_ADDR, "loop back\r\n");
+			//if(state == 0){
+				//setPWM(4.725);
+				//state = 1;
+			//} else if (state == 1){
+				//setPWM(9.175);
+				//state = 0;
+			//}
 		
 
 
@@ -275,27 +265,14 @@ int main (void)
 		
 		//char i2c_data[4] = {0x55,0x54,0x53,0x52};
 		//i2c_write(0x08,&i2c_data,4);
-		
-		usart_putchar(USART2_BASE_ADDR, 0x0D);
-		int lidar = getLidar(I2C_BUFFERP);
-		send_binary_to_terminal(lidar>>8);
-		send_binary_to_terminal(lidar);	
-		usart_write_line(USART3_BASE_ADDR, "\r\n");	
-		gpio_tgl_gpio_pin(AVR32_PIN_PA17);	
-		
-		if(uart_data == '1')
-			setMotorSpeeds(0,0);
-		if(uart_data == '2')
-			setMotorSpeeds(10,-10);
-		if(uart_data == '3')
-			setMotorSpeeds(20,-20);	
-		if(uart_data == '4')
-			setMotorSpeeds(30,-30);
-		if(uart_data == '5')
-			setMotorSpeeds(40,-40);
-		if(uart_data == '6')
-			setMotorSpeeds(50,-50);		
 		*/
-			
+		//usart_putchar(USART2_BASE_ADDR, 0x0D);
+		//int lidar = getLidar(I2C_BUFFERP);
+		//usart_write_line(USART3_BASE_ADDR, "Lidar val: ");
+		//send_binary_to_terminal(lidar>>8);
+		//send_binary_to_terminal(lidar);	
+		//usart_write_line(USART3_BASE_ADDR, "\r\n");	
+		
+		
 	}
 }

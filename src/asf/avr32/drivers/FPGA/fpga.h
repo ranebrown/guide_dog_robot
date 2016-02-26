@@ -36,4 +36,6 @@ void send_hex_to_terminal(unsigned int data);
 
 void setPWM(float duty);
 
+int configure_fpga2(unsigned int file_length);
+
 #endif
