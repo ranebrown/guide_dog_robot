@@ -15,19 +15,18 @@
 #include "eic.h"
 #include "fpga.h"
 #include "motor.h"
+
+extern int tension;
+
 //PWM modules
 uint32_t  *PWMA_base = (volatile uint32_t*)0xFFFF5400;
 //right wheel
 double x[2];
-double *xp = (double*)(&x);
 double y[2];
-double *yp = (double*)(&y);
 
 //left wheel
 double x2[2];
-double *xp2 = (double*)(&x2);
 double y2[2];
-double *yp2 = (double*)(&y2);
 
 double Kp = 10;
 double Ki = 150;
@@ -229,12 +228,12 @@ static void eic_int_handler1(void)
 	//right wheel tf
 	double ref_Hz = ((*refSpeed_p)*17.6/14.842*1124/2800*115);
 	double xin = ref_Hz - (double)enc_speed;
-	double yout = ( (*(yp+1)) + K1*xin + K2*(*xp) + K3*(*(xp+1)) );
+	double yout = (y[1] + K1*xin + K2*x[0] + K3*x[1] );
 	
 	//left wheel tf
 	double ref_Hz2 = ((*refSpeed_p2)*17.6/14.842*1124/2800*115);
 	double xin2 = ref_Hz2 - (double)enc_speed2;
-	double yout2 = ( (*(yp2+1)) + K1*xin2 + K2*(*xp2) + K3*(*(xp2+1)) );
+	double yout2 = ( y2[1] + K1*xin2 + K2*x2[0] + K3*x2[1] );
 	
 	//make sure value doesnt go outside of range
 	if (yout > 127){
@@ -250,34 +249,28 @@ static void eic_int_handler1(void)
 	}
 	
 	//update old values right side
-	*(xp+1) = *xp;
-	*xp = xin;
-	*(yp+1) = *yp;
-	*yp = yout;
+	x[1] = x[0];
+	x[0] = xin;
+	y[1] = y[0];
+	y[0] = yout;
 	
 	//update old values left side
-	*(xp2+1) = *xp2;
-	*xp2 = xin2;
-	*(yp2+1) = *yp2;
-	*yp2 = yout2;
+	x2[1] = x2[0];
+	x2[0] = xin2;
+	y2[1] = y2[0];
+	y2[0] = yout2;
 	
 	int adc2_2 =  (spi_read_FPGA(0, 0x05)) & 0xFF;
 	if(adc2_2 <= 50){
-		usart_write_line((uint32_t*)0xFFFF3C00, "Tension Sensed\r\n");
+		//usart_write_line((uint32_t*)0xFFFF3C00, "Tension Sensed\r\n");
 		*refSpeed_p = 0;
 		*refSpeed_p2 = 0;
-		yout = 0;
-		yout2 = 0;
 		setMotorSpeeds(0,0);
-		*(xp+1) = 0;
-		*xp = 0;
-		*(yp+1) = 0;
-		*yp = 0;
-		*(xp2+1) = 0;
-		*xp2 = 0;
-		*(yp2+1) = 0;
-		*yp2 = 0;
+		tension = 1;
 	}
+	else if(adc2_2 > 50)
+		tension = 0;
+		
 	//usart_write_line((uint32_t*)0xFFFF3C00, "ADC2 channel 2: ");
 	//send_binary_to_terminal(adc2_2);
 	//usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");

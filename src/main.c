@@ -24,6 +24,8 @@
 
 //GLOBALS
 
+int tension = 0;
+
 /*Magnetometer axis*/
 int mag_x;
 int MAG_XP = (uint32_t*)(&mag_x);
@@ -125,7 +127,6 @@ int main (void)
 	int angle[91];          // Angle Array
 	int pos = 0;			// servo Angle
 	setPWM(4.725);
-	for(d=0;d<3000000;d++);
 	
 	// nunchuck initialization
 	char nunchuckBuff[6] = {0};
@@ -135,88 +136,93 @@ int main (void)
 	
 	// main loop
 	while (1) {
-		/*for(d=0;d<3000;d++);
-		getNunchuckData(I2C_BUFFERP,zP,cP);
-		for(d=0;d<3000;d++);
-		usart_write_line(USART3_BASE_ADDR, "\r\n");
-		send_binary_to_terminal(z);
-		send_binary_to_terminal(c);
-		usart_write_line(USART3_BASE_ADDR, "\r\n");
-		if(z == 1){
-			usart_write_line(USART3_BASE_ADDR, "z = 1\r\n");
-			*refSpeed_p = 1.2;
-			*refSpeed_p2 = 1.2;
-		}
-		if(c==1){
-			*refSpeed_p = 0;
-			*refSpeed_p2 = 0;			
-		}*/
 		
-		int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
-		spi_write_FPGA(0, 0x80, (uart_data-48));
-		
-		if (uart_data == 'w'){
-			*refSpeed_p += .1;
-			*refSpeed_p2 += .1;
-			usart_write_line(USART3_BASE_ADDR, "ref speed + .1\r\n");
-		} else if (uart_data == 's'){
-			*refSpeed_p -= .1;
-			*refSpeed_p2 -= .1;
-			usart_write_line(USART3_BASE_ADDR, "ref speed - .1\r\n");
-		} else if (uart_data == '0'){
-			*refSpeed_p = 0;
-			*refSpeed_p2 = 0;
-			Disable_global_interrupt();
-			usart_write_line(USART3_BASE_ADDR, "Motor off\r\n");
-			setMotorSpeeds(0,0);
-		} else if (uart_data == '1'){
-			*refSpeed_p = 1.5;
-			*refSpeed_p2 = 1.5;
-			Enable_global_interrupt();
-			usart_write_line(USART3_BASE_ADDR, "Motor on\r\n");
-		} else if (uart_data == 'p'){
-			*scaler_p += 100;
-			usart_write_line(USART3_BASE_ADDR, "Scaler: ");
-			send_binary_to_terminal((int)(*scaler_p)>>8);
-			send_binary_to_terminal((int)(*scaler_p));
-			usart_write_line(USART3_BASE_ADDR, "\r\n");
-		} else if (uart_data == 'o'){
-			*scaler_p -= 100;
-			usart_write_line(USART3_BASE_ADDR, "Scaler: ");
-			send_binary_to_terminal((int)(*scaler_p)>>8);
-			send_binary_to_terminal((int)(*scaler_p));
-			usart_write_line(USART3_BASE_ADDR, "\r\n");
-		} else if (uart_data == 'l'){
-			*Kp_p += 10;
-			usart_write_line(USART3_BASE_ADDR, "Kp: ");
-			send_binary_to_terminal((int)(*Kp_p)>>8);
-			send_binary_to_terminal((int)(*Kp_p));
-			usart_write_line(USART3_BASE_ADDR, "\r\n");
-		} else if (uart_data == 'k'){
-			*Kp_p -= 10;
-			usart_write_line(USART3_BASE_ADDR, "Kp: ");
-			send_binary_to_terminal((int)(*Kp_p)>>8);
-			send_binary_to_terminal((int)(*Kp_p));
-			usart_write_line(USART3_BASE_ADDR, "\r\n");
-		}else if (uart_data == '9'){
-			// get data
-			getNunchuckData(nunchuckBuff);
-			// decode button data
-			getNunchuckButtons(nunchuckBuff, &z, &c);
-			// get joystick data
-			getNunchuckJoy(nunchuckBuff, &xJoy, &yJoy);
-			// print results to terminal
+		//int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
+		//spi_write_FPGA(0, 0x80, (uart_data-48));
+		//
+		//if (uart_data == 'w'){
+			//*refSpeed_p += .1;
+			//*refSpeed_p2 += .1;
+			//usart_write_line(USART3_BASE_ADDR, "ref speed + .1\r\n");
+		//} else if (uart_data == 's'){
+			//*refSpeed_p -= .1;
+			//*refSpeed_p2 -= .1;
+			//usart_write_line(USART3_BASE_ADDR, "ref speed - .1\r\n");
+		//} else if (uart_data == '0'){
+			//*refSpeed_p = 0;
+			//*refSpeed_p2 = 0;
+			//Disable_global_interrupt();
+			//usart_write_line(USART3_BASE_ADDR, "Motor off\r\n");
+			//setMotorSpeeds(0,0);
+		//} else if (uart_data == '1'){
+			//*refSpeed_p = 1.5;
+			//*refSpeed_p2 = 1.5;
+			//Enable_global_interrupt();
+			//usart_write_line(USART3_BASE_ADDR, "Motor on\r\n");
+		//} else if (uart_data == 'p'){
+			//*scaler_p += 100;
+			//usart_write_line(USART3_BASE_ADDR, "Scaler: ");
+			//send_binary_to_terminal((int)(*scaler_p)>>8);
+			//send_binary_to_terminal((int)(*scaler_p));
+			//usart_write_line(USART3_BASE_ADDR, "\r\n");
+		//} else if (uart_data == 'o'){
+			//*scaler_p -= 100;
+			//usart_write_line(USART3_BASE_ADDR, "Scaler: ");
+			//send_binary_to_terminal((int)(*scaler_p)>>8);
+			//send_binary_to_terminal((int)(*scaler_p));
+			//usart_write_line(USART3_BASE_ADDR, "\r\n");
+		//} else if (uart_data == 'l'){
+			//*Kp_p += 10;
+			//usart_write_line(USART3_BASE_ADDR, "Kp: ");
+			//send_binary_to_terminal((int)(*Kp_p)>>8);
+			//send_binary_to_terminal((int)(*Kp_p));
+			//usart_write_line(USART3_BASE_ADDR, "\r\n");
+		//} else if (uart_data == 'k'){
+			//*Kp_p -= 10;
+			//usart_write_line(USART3_BASE_ADDR, "Kp: ");
+			//send_binary_to_terminal((int)(*Kp_p)>>8);
+			//send_binary_to_terminal((int)(*Kp_p));
+			//usart_write_line(USART3_BASE_ADDR, "\r\n");
+		//}else if (uart_data == '9'){
+			//// get data
+			//getNunchuckData(nunchuckBuff);
+			//// decode button data
+			//getNunchuckButtons(nunchuckBuff, &z, &c);
+			//// get joystick data
+			//getNunchuckJoy(nunchuckBuff, &xJoy, &yJoy);
+			//// print results to terminal
 			//usart_write_line(USART3_BASE_ADDR, "z button:\t");
 			//send_binary_to_terminal(z);
 			//usart_write_line(USART3_BASE_ADDR, "\t");
 			//usart_write_line(USART3_BASE_ADDR, "c button:\t");
 			//send_binary_to_terminal(c);
+			//usart_write_line(USART3_BASE_ADDR, "\r\n");
 			//usart_write_line(USART3_BASE_ADDR, "\t");
-			send_binary_to_terminal(xJoy);
+			//send_binary_to_terminal(xJoy);
 			//usart_write_line(USART3_BASE_ADDR, "\t");
 			//send_binary_to_terminal(yJoy);
-			usart_write_line(USART3_BASE_ADDR, "\r\n");
+			//usart_write_line(USART3_BASE_ADDR, "\r\n");
+		//
+		//}
+		
+		for(d=0;d<10000;d++); // need delay or else read freezes microcontroller
+		// get data
+		getNunchuckData(nunchuckBuff);
+		getNunchuckJoy(nunchuckBuff, &xJoy, &yJoy);
+		if(!tension)
+		{
+			if(yJoy > 200)
+			{
+				*refSpeed_p = 1.2;
+				*refSpeed_p2 = 1.2;
+			}
+			if(yJoy <= 200)
+			{
+				*refSpeed_p = 0;
+				*refSpeed_p2 = 0;
+			}
 		}
+	
 		
 		
 
