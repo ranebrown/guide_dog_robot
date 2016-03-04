@@ -121,12 +121,12 @@ int main (void)
 	//send_binary_to_terminal(firm);
 	//usart_write_line(USART3_BASE_ADDR, "\r\n");
 	int d = 0;
-	
+	int stop = 0;
 	initInterrupt();
 	
 	int angle[91];          // Angle Array
 	int pos = 0;			// servo Angle
-	setPWM(4.725);
+	setPWM(4.75);
 	
 	// nunchuck initialization
 	char nunchuckBuff[6] = {0};
@@ -134,11 +134,19 @@ int main (void)
 	uint8_t xJoy = 0, yJoy=0;	// joystick
 	initNunchuck();
 	
+	setPWM(50);
+		
 	// main loop
 	while (1) {
 		
 		//int uart_data = usart_getchar(USART3_BASE_ADDR) & 0xFF;						//wait for uart data
 		//spi_write_FPGA(0, 0x80, (uart_data-48));
+		
+		//int adc2_1 =  (spi_read_FPGA(0, 0x04)) & 0xFF;
+		//send_binary_to_terminal(adc2_1);
+		//usart_write_line(USART3_BASE_ADDR, "\r\n");
+		
+		//int uart_data = 1;
 		//
 		//if (uart_data == 'w'){
 			//*refSpeed_p += .1;
@@ -209,22 +217,81 @@ int main (void)
 		// get data
 		getNunchuckData(nunchuckBuff);
 		getNunchuckJoy(nunchuckBuff, &xJoy, &yJoy);
-		if(!tension)
+		//send_binary_to_terminal(yJoy);
+		//usart_write_line(USART3_BASE_ADDR, "\r\n");
+		//if(!tension)
+		//{
+		if(!stop)
 		{
+			setMotorBrakes(0,0);
 			if(yJoy > 200)
 			{
+				//setMotorSpeeds( 50, 50);
 				*refSpeed_p = 1.2;
 				*refSpeed_p2 = 1.2;
 			}
 			if(yJoy <= 200)
 			{
+				//setMotorSpeeds( 0, 0);
+				//settMotorBrakes( 0, 0);
+				
 				*refSpeed_p = 0;
 				*refSpeed_p2 = 0;
 			}
-		}
+		}			
+		//}
 	
+		 //  sweep servo
+		setPWM(45);
+		for(d=0; d<1000000; d++){
+			if(d%10000==0)
+			{
+				int adc2_1 =  (spi_read_FPGA(0, 0x04)) & 0xFF;
+				//send_binary_to_terminal(adc2_1);
+				//usart_write_line(USART3_BASE_ADDR, "\r\n");
+				if(adc2_1>50)
+				{
+					*refSpeed_p = 0;
+					*refSpeed_p2 = 0;
+					stop = 1;
+					setMotorBrakes(127,127);
+				}
+				else
+				{
+					stop = 0;
+				}
+			}							
+
+		}
+		setPWM(50);
+		for(d=0; d<1000000; d++)
+		{
+			if(d%10000==0)
+			{
+				int adc2_1 =  (spi_read_FPGA(0, 0x04)) & 0xFF;
+				//send_binary_to_terminal(adc2_1);
+				//usart_write_line(USART3_BASE_ADDR, "\r\n");
+				if(adc2_1>50)
+				{
+					*refSpeed_p = 0;
+					*refSpeed_p2 = 0;
+					stop = 0;
+					setMotorBrakes(127,127);
+				}
+				else
+				{
+					stop = 0;
+				}
+			}
+		}
 		
+		//if(stop==1)
+		//{
+			//*refSpeed_p = 0;
+			//*refSpeed_p2 = 0;	
+		//}
 		
+
 
 		// Scan 90 degrees and store distance and angle readings
 		//for(pos = 0; pos <= 90; pos += 1)

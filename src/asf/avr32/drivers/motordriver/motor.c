@@ -307,7 +307,7 @@ void setM1Brake(int brake) {
  * a value of 0 is no brake (free spin)
  * a value of 127 is full brake
  */
-void settMotorBrakes(int m0Brake, int m1Brake) {
+void setMotorBrakes(int m0Brake, int m1Brake) {
 	setM0Brake(m0Brake);
 	setM1Brake(m1Brake);
 }

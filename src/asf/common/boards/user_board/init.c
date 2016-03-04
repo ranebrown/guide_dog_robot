@@ -196,7 +196,7 @@ static void eic_int_handler1(void)
 {
 	if (eic_is_interrupt_line_pending(&AVR32_EIC, 2))
 		eic_clear_interrupt_line(&AVR32_EIC, 2);
-	
+		
 	//motor constants
 	//double Kp = 75;
 	//double Kp = 50;
@@ -246,6 +246,18 @@ static void eic_int_handler1(void)
 		yout2 = 127;
 	} else if (yout2 < -127){
 		yout2 = -127;
+	}
+	
+	if(refSpeed == 0 && refSpeed2 == 0 && (xin == 0 || xin2 == 0))
+	{
+		x[1] = 0;
+		x[0] = 0;
+		y[1] = 0;
+		y[0] = 0;
+		x2[1] = 0;
+		x2[0] = 0;
+		y2[1] = 0;
+		y2[0] = 0;
 	}
 	
 	//update old values right side
