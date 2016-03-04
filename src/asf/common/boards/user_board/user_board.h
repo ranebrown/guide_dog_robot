@@ -46,7 +46,10 @@ void gpioClock(void);
  */
 void initInterrupt(void);
 
-// interrupt handler
-static void eic_int_handler1(void);
+// interrupt handler motors
+static void eicHandler_motors(void);
+
+// interrupt handler motors
+static void eicHandler_CV(void);
 
 #endif // USER_BOARD_H

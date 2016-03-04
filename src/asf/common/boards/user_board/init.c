@@ -31,11 +31,6 @@ double y2[2];
 double Kp = 10;
 double Ki = 150;
 double Kd = 20;
-double *Kp_p = (double*)(&Kp);
-double *Ki_p = (double*)(&Ki);
-double *Kd_p = (double*)(&Kd);
-double scaler = 2000;
-double *scaler_p = (double*)(&scaler);
 
 //right speed
 double refSpeed = 0;
@@ -114,6 +109,9 @@ void board_init(void)
 	usart_init_rs232(USART2_BASE_ADDR, &USART_OPTIONS2, 19750000);
 	
 	// initialize i2c pins
+	gpio_enable_gpio_pin(AVR32_PIN_PA17);
+	gpio_enable_pin_pull_up(AVR32_PIN_PA17);
+	gpio_enable_pin_pull_up(AVR32_PIN_PB04);
 	gpio_enable_module_pin(AVR32_TWIMS1_TWCK_0_1_PIN, 6);							//enable i2c clk
 	gpio_enable_module_pin(AVR32_TWIMS1_TWD_0_PIN, AVR32_TWIMS1_TWD_0_FUNCTION);	//enable i2c data
 	
@@ -137,7 +135,10 @@ void board_init(void)
 	gpio_configure_pin(AVR32_PIN_PA11, program_b_config);
 	gpio_configure_pin(AVR32_PIN_PA22, init_b_config);
 	gpio_configure_pin(AVR32_PIN_PB10, done_config);
-	 
+	
+	// gpio pin for raspberry pi read (computer vision)
+	//gpio_enable_gpio_pin(AVR32_PIN_PB09);
+	//gpio_configure_pin(AVR32_PIN_PB09, GPIO_DIR_INPUT); 
 }
 
 /*
@@ -192,29 +193,17 @@ void gpioClock(void) {
 	//gpio_enable_module_pin(AVR32_SCIF_GCLK_1_0_PIN, AVR32_SCIF_GCLK_1_0_FUNCTION);
 }
 
-static void eic_int_handler1(void)
+static void eicHandler_motors(void)
 {
 	if (eic_is_interrupt_line_pending(&AVR32_EIC, 2))
 		eic_clear_interrupt_line(&AVR32_EIC, 2);
 		
 	//motor constants
-	//double Kp = 75;
-	//double Kp = 50;
-	//double Ki = 150;
-	//double Kd = 20;
 	double Ts = 1/47.5;
-	//double K1 = .08;//(*Kp_p+*Ki_p*Ts/2+2*(*Kd_p)/Ts)/(*scaler_p);
-	//double K2 = -.115;//(*Ki_p*Ts-4*(*Kd_p)/Ts)/(*scaler_p);
-	//double K3 = .052;//(-(*Kp_p)+*Ki_p*Ts/2+2*(*Kd_p)/Ts)/(*scaler_p);
-	
-	//double K1 = .1;//(*Kp_p+*Ki_p*Ts/2+2*(*Kd_p)/Ts)/(*scaler_p);
-	//double K2 = -.14;//(*Ki_p*Ts-4*(*Kd_p)/Ts)/(*scaler_p);
-	//double K3 = .075;//(-(*Kp_p)+*Ki_p*Ts/2+2*(*Kd_p)/Ts)/(*scaler_p);
 	
 	double K1 = .09;//(*Kp_p+*Ki_p*Ts/2+2*(*Kd_p)/Ts)/(*scaler_p);
 	double K2 = -.13;//(*Ki_p*Ts-4*(*Kd_p)/Ts)/(*scaler_p);
 	double K3 = .065;//(-(*Kp_p)+*Ki_p*Ts/2+2*(*Kd_p)/Ts)/(*scaler_p);
-	
 	
 	//right wheel speed
 	char enc_speed =  spi_read_FPGA(0, 0x01);
@@ -235,7 +224,7 @@ static void eic_int_handler1(void)
 	double xin2 = ref_Hz2 - (double)enc_speed2;
 	double yout2 = ( y2[1] + K1*xin2 + K2*x2[0] + K3*x2[1] );
 	
-	//make sure value doesnt go outside of range
+	//make sure value doesn't go outside of range
 	if (yout > 127){
 		yout = 127;
 	} else if (yout < -127){
@@ -258,6 +247,7 @@ static void eic_int_handler1(void)
 		x2[0] = 0;
 		y2[1] = 0;
 		y2[0] = 0;
+		setMotorSpeeds(0,0);
 	}
 	
 	//update old values right side
@@ -272,23 +262,7 @@ static void eic_int_handler1(void)
 	y2[1] = y2[0];
 	y2[0] = yout2;
 	
-	int adc2_2 =  (spi_read_FPGA(0, 0x05)) & 0xFF;
-	if(adc2_2 <= 50){
-		//usart_write_line((uint32_t*)0xFFFF3C00, "Tension Sensed\r\n");
-		*refSpeed_p = 0;
-		*refSpeed_p2 = 0;
-		setMotorSpeeds(0,0);
-		tension = 1;
-	}
-	else if(adc2_2 > 50)
-		tension = 0;
-		
-	//usart_write_line((uint32_t*)0xFFFF3C00, "ADC2 channel 2: ");
-	//send_binary_to_terminal(adc2_2);
-	//usart_write_line((uint32_t*)0xFFFF3C00, "\r\n");
-	
-	
-	setMotorSpeeds((signed char)yout,(signed char)(-yout2));
+	setMotorSpeeds((signed char)yout,(signed char)(yout2));
 	
 	//if (eic_is_interrupt_line_pending(&AVR32_EIC, 2)){
 		////send_binary_to_terminal((char)enc_speed);
@@ -307,64 +281,69 @@ static void eic_int_handler1(void)
 	return;
 }
 
+static void eicHandler_CV(void)
+{
+	// computer vision pin AVR32_PIN_PB09 = 41
+	
+	// clear interrupt line
+	if (eic_is_interrupt_line_pending(&AVR32_EIC, 3))
+	// interrupt vector addr, line number
+	eic_clear_interrupt_line(&AVR32_EIC, 3);
+	
+	usart_write_line((uint32_t*)0xFFFF3C00, "stop sign \r\n");
+}
+
 /*
  * initializes interrupt
  * param eic_options = structure containing interrupt settings
  * return 0 success, 1 else
  */
-void initInterrupt() {
-	// interrupts according to shcematic
-	// gio3 adc int 2
-	// gpio2 enc int 0
-	
-	// structure for interrupt options
-	eic_options_t eic_options;
-	// Enable level-triggered interrupt.
-	eic_options.eic_mode   = EIC_MODE_EDGE_TRIGGERED;
-	// Interrupt will trigger on low-level.
-	//eic_options.eic_level  = EIC_LEVEL_LOW_LEVEL;
-	
-	eic_options.eic_edge = EIC_EDGE_RISING_EDGE;
-	// Enable filter.
-	eic_options.eic_filter = EIC_FILTER_ENABLED;
-	// Initialize in synchronous mode : interrupt is synchronized to the clock
-	eic_options.eic_async  = EIC_SYNCH_MODE;
-	// Choose External Interrupt Controller Line
-	eic_options.eic_line   = 2;
-	
-	// Map the interrupt line to the GPIO pin with the right peripheral function.
+void initInterrupt()
+{	
+	// encoders gpio3 = PA13 -> EIC[2]
+	// computer vision pin AVR32_PIN_PB09 = 41 -> EIC[3]
+		
+	// structure for interrupt options motor encoders
+	eic_options_t eic_options[2];
+		
+	// motor options
+	eic_options[0].eic_mode		= EIC_MODE_EDGE_TRIGGERED;
+	eic_options[0].eic_edge		= EIC_EDGE_RISING_EDGE;
+	eic_options[0].eic_filter	= EIC_FILTER_ENABLED;
+	eic_options[0].eic_async	= EIC_SYNCH_MODE;			// interrupt is synchronized to the clock
+	eic_options[0].eic_line		= 2;						// Choose External Interrupt Controller Line
+		
+	// computer vision options
+	eic_options[1].eic_mode			= EIC_MODE_EDGE_TRIGGERED;
+	eic_options[1].eic_edge			= EIC_EDGE_RISING_EDGE;
+	eic_options[1].eic_filter		= EIC_FILTER_ENABLED;
+	eic_options[1].eic_async		= EIC_SYNCH_MODE;			// interrupt is synchronized to the clock
+	eic_options[1].eic_line			= 1;						// Choose External Interrupt Controller Line
+		
+	// map gpio pins to be used as external interrupts
 	gpio_enable_module_pin(AVR32_EIC_EXTINT_2_0_PIN, AVR32_EIC_EXTINT_2_0_FUNCTION);
- 	/*
-	 * Enable the internal pull-up resistor on that pin (because the EIC is
-	 * configured such that the interrupt will trigger on low-level, see
-	 * eic_options.eic_level).
-	 */
-	gpio_enable_pin_pull_up(AVR32_EIC_EXTINT_2_0_PIN);
-	
+	gpio_enable_module_pin(AVR32_EIC_EXTINT_3_1_PIN, AVR32_EIC_EXTINT_3_1_FUNCTION);
+		
 	// Disable all interrupts.
 	Disable_global_interrupt();
 
 	// Initialize interrupt vectors.
 	INTC_init_interrupts();
-
-	 // Register the EIC interrupt handler to the interrupt controller.
-	 // eic_int_handler1 and eic_int_handler2 are the interrupt handlers to register.
-	 // EXT_INT_EXAMPLE_IRQ_LINE1 and EXT_INT_EXAMPLE_IRQ_LINE2 are the IRQ of the
-	 // interrupt handlers to register.
-	 // AVR32_INTC_INT0 is the interrupt priority level to assign to the group of this IRQ.
-	 // void INTC_register_interrupt(__int_handler handler, unsigned int irq, unsigned int int_level);
-	 INTC_register_interrupt(&eic_int_handler1, AVR32_EIC_IRQ_2, AVR32_INTC_INT0);
-	 
+	
+	// map the interrupt handler (function) to the interrupt controller with a given priority 
+	// !! check table in datasheet pg 9 for correct EIC[n]
+	INTC_register_interrupt(&eicHandler_motors, AVR32_EIC_IRQ_2, AVR32_INTC_INTLEVEL_INT1);
+	INTC_register_interrupt(&eicHandler_CV, AVR32_EIC_IRQ_3, AVR32_INTC_INTLEVEL_INT1);
+		 
 	// Init the EIC controller with the options
-	eic_init(&AVR32_EIC, &eic_options,1);
-
-	// Enable External Interrupt Controller Line
+	eic_init(&AVR32_EIC, eic_options, 2);
+	
+	// Enable External Interrupt Controller Line corresponds to EIC[n]
 	eic_enable_line(&AVR32_EIC, 2);
-	
+	eic_enable_line(&AVR32_EIC, 3);
 	eic_enable_interrupt_line(&AVR32_EIC, 2);
-	
-	//eic_enable_interrupt_scan(&AVR32_EIC,10);
-	
+	eic_enable_interrupt_line(&AVR32_EIC, 3);
+		
 	// Enable all interrupts.
 	Enable_global_interrupt();
 }
